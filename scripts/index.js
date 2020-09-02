@@ -1,12 +1,13 @@
 var editor, shadow, textToHighlight;
-String.prototype.insertAt = function(index,str){
-  return this.slice(0,index) + str + this.slice(index)
-}
+String.prototype.splice = function(idx, rem, str) {
+  return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+};
 function display(evt) {
 	evt.stopPropagation();
-	textToHighlight = editor.value.replace("<", "&lt;");
-	textToHighlight = textToHighlight.replace(">", "&gt;");
-	textToHighlight = textToHighlight.insertAt(editor.selectionEnd, `<span id = "cursor"></span>`);
+	textToHighlight = editor.value;
+	textToHighlight = textToHighlight.replace(/</g, "&lt;");
+	textToHighlight = textToHighlight.replace(/>/g, "&gt;");
+	textToHighlight = textToHighlight.splice(editor.selectionStart, 0, `<span id = "cursor"></span>`);
 	shadow.innerHTML = textToHighlight;
 }
 document.addEventListener("DOMContentLoaded", function() {
