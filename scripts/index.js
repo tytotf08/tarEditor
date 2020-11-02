@@ -15,6 +15,30 @@ function saveCaretPosition(context){
 
 	}
 }
+function beforeCursor(context) {
+  const s = window.getSelection();
+  const r0 = s.getRangeAt(0);
+  const r = document.createRange();
+  r.selectNodeContents(context);
+  r.setEnd(r0.startContainer, r0.startOffset);
+  return r.toString();
+}
+function getLeadingTabs(context) {
+	var splice = beforeCursor(context);
+	var endOfLine = splice.lastIndexOf("\n");
+
+	var currentLine = splice.substr(endOfLine+1);
+
+	var tabs = "";
+  var index = 0;
+  while (currentLine.charAt(index++) === "\t") {
+    tabs += "\t";
+  }
+  if (currentLine.trim().endsWith("{")) {
+  	tabs += "\t";
+  }
+  return tabs;
+}
 
 function getTextNodeAtPosition(root, index){
 	const NODE_TYPE = NodeFilter.SHOW_TEXT;
@@ -42,13 +66,14 @@ editor.addEventListener("input", function(e) {
 });
 editor.addEventListener("keydown", function(e) {
 	if (e.keyCode === 13) {
-		document.execCommand("insertHTML", false, "\n");
+		var tabs = getLeadingTabs(editor);
+		document.execCommand("insertHTML", false, "\n"+tabs);
 	}
 	if (e.keyCode === 9) {
 		e.preventDefault();
 		document.execCommand("insertHTML", false, "\t");
 	}
-})
+});
 document.addEventListener("DOMContentLoaded", function(e) {
 	hljs.highlightBlock(editor);
 });
