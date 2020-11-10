@@ -11,13 +11,13 @@ body, html {
   text-align: center;
 }
 div#editor {
-	width: 50%;
-	height: 50%;
+	width: 90%;
+	height: 70%;
 	white-space: pre;
 	overflow-x: auto;
 	overflow-y: auto;
 	padding: 1rem;
-	margin: 0px;
+	margin: auto;
 	font-family: Menlo, monospace;
 	justify-content: left;
 	text-align: left;
@@ -28,4 +28,24 @@ div#editor {
 }
 div#editor:focus {
 	outline: none;
+}
+div#status-bar {
+	margin: auto;
+	width: 97%;
+	border-radius: 0.5em;
+	line-height: 2em;
+	background-color: #bababa;
+	font-family: 'Open Sans', sans-serif;
+}
+div#status-bar * {
+	border: none;
+	text-decoration: none;
+	color: #555555;
+	font-family: inherit;
+	margin: auto;
+	display: inline-block;
+}
+div#status-bar *:focus {
+	outline: none;
+	color: #777777;
 }
