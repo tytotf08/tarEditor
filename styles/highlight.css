@@ -57,8 +57,6 @@
 
 .hljs-string,
 .hljs-type,
-.hljs-built_in,
-.hljs-builtin-name,
 .hljs-selector-id,
 .hljs-selector-attr,
 .hljs-selector-pseudo,
@@ -67,9 +65,15 @@
 .hljs-template-variable {
   color: #e6db74;
 }
-
+.hljs-built_in,
+.hljs-builtin-name {
+	color: #66d6ed;
+	font-style: italic;
+}
 .hljs-comment,
-.hljs-deletion,
-.hljs-meta {
+.hljs-deletion {
   color: #75715e;
+}
+.hljs-meta {
+	color: #e6db74;
 }

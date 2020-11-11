@@ -1,13 +1,57 @@
 "use strict"; 
 const editor = document.querySelector("div#editor");
-let savedRange, isInFocus, text, restore, prev, selection, range, len, pos, s, r0, r, splice, endOfLine, currentLine, tabs, index;
-const debounce = function(cb, wait) {
-	let timeout = 0;
+let savedRange, isInFocus, text, restore, prev, selection, range, len, pos, s, r0, r, splice, endOfLine, currentLine, tabs, index, NODE_TYPE, treeWalker, html, last, c, oldArray, prefix;
+let focused = true;
+let atInfo = {};
+let incarnations = [];
+let at = 0;
+let instanceIsComposing = false;
+let recording;
+const diff = function() {
+	return prev !== editor.textContent;
+}
+const isCmd = function(e) {
+	return e.metaKey || e.ctrlKey;
+}
+const isShift = function(e) {
+	return e.shiftKey;
+}
+const isUndo = function(e) {
+	return isCmd(e) && !isShift(e) && e.keyCode === 90;
+}
+const isRedo = function(e) {
+	return (isCmd(e) && isShift(e) && e.keyCode === 90) || (isCmd(e) && !isShift(e) && e.keyCode === 89);
+}
+const isTimeToRecord = function(e) {
+	return !isRedo(e) && !isUndo(e) && !e.metaKey && !e.ctrlKey && !e.altKey && !e.key.startsWith("Arrow");
+}
+const debounce = function(func, wait) {
 	return (...args) => {
-		clearTimeout(timeout);
-		timeout = window.setTimeout(() => cb(...args), wait);
+		window.setTimeout(() => func(...args), wait);
 	};
 }
+const record = function() {
+	if (!focus) return;
+	html = editor.innerHTML;
+	pos = saveCaretPosition(editor);
+	console.log(pos);
+	last = incarnations[at];
+	if (last) {
+		if (last.html === html && last.pos === last.pos) {
+			return;
+		}
+	}
+	at++;
+	incarnations[at] = {html, pos};
+	console.log(incarnations[at]);
+	console.log(incarnations);
+}
+const waitToRecord = debounce((event) => {
+	if (isTimeToRecord(event)) {
+		record();
+		recording = false;
+	}
+}, 100);
 const insertText = function(text) {
 	text = text
 		.replace(/&/g, "&amp;")
@@ -17,34 +61,35 @@ const insertText = function(text) {
 		.replace(/'/g, "&#039;");
 	document.execCommand("insertHTML", false, text);
 }
-const getTextNodeAtPosition = function(root, index){
-	const NODE_TYPE = NodeFilter.SHOW_TEXT;
-	var treeWalker = document.createTreeWalker(root, NODE_TYPE, function next(elem) {
-		if(index > elem.textContent.length){
-			index -= elem.textContent.length;
-			return NodeFilter.FILTER_REJECT
-		}
-		return NodeFilter.FILTER_ACCEPT;
-	});
-	var c = treeWalker.nextNode();
-	return {
-		node: c? c: root,
-		position: index
-	};
-}
 const saveCaretPosition = function(context){
-	selection = window.getSelection();
-	range = selection.getRangeAt(0);
-	range.setStart(context, 0);
-	len = range.toString().length;
-
-	return function restore(){
-		pos = getTextNodeAtPosition(context, len);
-		selection.removeAllRanges();
-		range = new Range();
-		range.setStart(pos.node ,pos.position);
-		selection.addRange(range);
+	range = window.getSelection().getRangeAt(0);
+	prefix = range.cloneRange();
+	prefix.selectNodeContents(context);
+	prefix.setEnd(range.endContainer, range.endOffset);
+	return prefix.toString().length;
+}
+const restoreCaretPosition = function(pos, context) {
+	for (const node of context.childNodes) {
+	  if (node.nodeType == Node.TEXT_NODE) {
+			if (node.length >= pos) {
+			  const range = document.createRange();
+			  const sel = window.getSelection();
+			  range.setStart(node, pos);
+			  range.collapse(true);
+			  sel.removeAllRanges();
+			  sel.addRange(range);
+			  return -1;
+			} else {
+			  pos = pos - node.length;
+			}
+		  } else {
+			pos = restoreCaretPosition(pos, node);
+			if (pos < 0) {
+			  return pos;
+			}
+	  }
 	}
+	return pos;
 }
 const beforeCursor = function(context) {
 	s = window.getSelection();
@@ -71,17 +116,18 @@ const getLeadingTabs = function(context) {
 	return tabs;
 }
 const highlight = function() {
-	restore = saveCaretPosition(editor);
+	pos = saveCaretPosition(editor);
 	editor.textContent = editor.textContent;
 	hljs.highlightBlock(editor);
-	restore();
+	restoreCaretPosition(pos, editor);
 }
-const waitToHighlight = debounce(() => {
+const waitToHighlight = debounce(function(){
 	highlight();
-}, 30);
-editor.setAttribute("contentEditable", "plaintext-only");
+}, 50);
 editor.addEventListener("keydown", function(e) {
-	prev = editor.textContent;
+	if (diff()) {
+		prev = editor.textContent;
+	}
 	if (e.key === "Enter") {
 		tabs = getLeadingTabs(editor);
 		if (tabs.length > 0) {
@@ -93,19 +139,53 @@ editor.addEventListener("keydown", function(e) {
 		e.preventDefault();
 		insertText("\t");
 	}
+	if (e.key === "Backspace") {
+		e.preventDefault();
+		document.execCommand("delete");
+	}
+	if (isRedo(e)) {
+		e.preventDefault();
+		at++;
+		if (incarnations[at]) {
+			editor.innerHTML = incarnations[at].html;
+			restoreCaretPosition(incarnations[at].pos, editor);
+		}
+		if (at > incarnations.length) {
+			at--;
+		}
+	}
+	if (isUndo(e)) {
+		e.preventDefault();
+		at--;
+		if (incarnations[at]) {
+			editor.innerHTML = incarnations[at].html;
+			restoreCaretPosition(incarnations[at].pos, editor);
+		}
+		if (at < 0) {
+			at = 0;
+		}
+	}
 });
 editor.addEventListener("keyup", function(e) {
-	if (prev !== editor.textContent){
+	if (e.isComposing) return;
+	if (diff()){
 		waitToHighlight();
 	}
+	waitToRecord(e);
 });
 editor.addEventListener("paste", function(e) {
 	e.preventDefault();
-	text = (event.originalEvent || event).clipboardData.getData("text/plain");
+	text = (e.originalEvent || e).clipboardData.getData("text/plain");
 	insertText(text);
-	restore = saveCaretPosition(editor);
+	pos = saveCaretPosition(editor);
 	hljs.highlightBlock(editor);
-	restore();
+	restoreCaretPosition(pos, editor);
+});
+editor.addEventListener("focus", function(e) {
+	focused = true;
+});
+editor.addEventListener("blur", function(e) {
+	focused = false;
 });
 document.addEventListener("DOMContentLoaded", function(e) {
 	hljs.highlightBlock(editor);
