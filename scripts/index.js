@@ -217,7 +217,7 @@ const waitToHighlight = function() {
 			num.pop();
 			num = num.join("");
 		}
-		document.querySelector("div#status-bar span#line").innerHTML = "Line: " + testNum().split("").pop();
+		document.querySelector("div#status-bar span#line").innerHTML = "Lines: " + testNum().split("").pop();
 		console.log(num);
 		highlight();
 	}, 50);

@@ -1,4 +1,4 @@
-# Tar Editor Version 1.1.3
+# Tar Editor Version 1.1.4
 
 Tar Editor is an in-development text editor with an Electron engine, currently, being built, and a web technologies frontend. The frontend doesn't utilize any external libraries except for highlight.js, and the core editor is built entirely from scratch.
 
