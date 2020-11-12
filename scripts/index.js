@@ -1,12 +1,14 @@
 "use strict"; 
 const editor = document.querySelector("div#editor");
-let savedRange, isInFocus, text, restore, prev, selection, range, len, pos, s, r0, r, splice, endOfLine, currentLine, tabs, index, NODE_TYPE, treeWalker, html, last, c, oldArray, prefix;
+const langChooser = document.querySelector("select#lang"); 
+let NODE_TYPE, baseRange, c, currentLine, endOfLine, html, index, isInFocus, last, len, oldArray, pos, prefix, prev, r, range, rangeWeAreUsing, restore, savedRange, selection, splice, tabs, text, treeWalker;
 let focused = true;
 let atInfo = {};
 let incarnations = [];
 let at = 0;
 let instanceIsComposing = false;
 let recording;
+let isInBrackets = false;
 const diff = function() {
 	return prev !== editor.textContent;
 }
@@ -25,11 +27,6 @@ const isRedo = function(e) {
 const isTimeToRecord = function(e) {
 	return !isRedo(e) && !isUndo(e) && !e.metaKey && !e.ctrlKey && !e.altKey && !e.key.startsWith("Arrow");
 }
-const debounce = function(func, wait) {
-	return (...args) => {
-		window.setTimeout(() => func(...args), wait);
-	};
-}
 const record = function() {
 	if (!focus) return;
 	html = editor.innerHTML;
@@ -46,12 +43,15 @@ const record = function() {
 	console.log(incarnations[at]);
 	console.log(incarnations);
 }
-const waitToRecord = debounce((event) => {
-	if (isTimeToRecord(event)) {
-		record();
-		recording = false;
-	}
-}, 100);
+const waitToRecord = function(event) {
+	window.setTimeout(function(e) {
+		highlight(); // so, if we undo to a non-highlighted token, it will always be highlighted
+		if (isTimeToRecord(event)) {
+			record();
+			recording = false;
+		}
+	}, 100);
+}
 const insertText = function(text) {
 	text = text
 		.replace(/&/g, "&amp;")
@@ -92,12 +92,11 @@ const restoreCaretPosition = function(pos, context) {
 	return pos;
 }
 const beforeCursor = function(context) {
-	s = window.getSelection();
-	r0 = s.getRangeAt(0);
-	r = document.createRange();
-	r.selectNodeContents(context);
-	r.setEnd(r0.startContainer, r0.startOffset);
-	return r.toString();
+	baseRange = window.getSelection().getRangeAt(0);
+	rangeWeAreUsing = document.createRange();
+	rangeWeAreUsing.selectNodeContents(context);
+	rangeWeAreUsing.setEnd(baseRange.startContainer, baseRange.startOffset);
+	return String(rangeWeAreUsing);
 }
 const getLeadingTabs = function(context) {
 	splice = beforeCursor(context);
@@ -118,12 +117,14 @@ const getLeadingTabs = function(context) {
 const highlight = function() {
 	pos = saveCaretPosition(editor);
 	editor.textContent = editor.textContent;
-	hljs.highlightBlock(editor);
+	Prism.highlightElement(editor);
 	restoreCaretPosition(pos, editor);
 }
-const waitToHighlight = debounce(function(){
-	highlight();
-}, 50);
+const waitToHighlight = function() {
+	window.setTimeout(function() {
+		highlight();
+	}, 50);
+}
 editor.addEventListener("keydown", function(e) {
 	if (diff()) {
 		prev = editor.textContent;
@@ -178,7 +179,7 @@ editor.addEventListener("paste", function(e) {
 	text = (e.originalEvent || e).clipboardData.getData("text/plain");
 	insertText(text);
 	pos = saveCaretPosition(editor);
-	hljs.highlightBlock(editor);
+	Prism.highlightElement(editor);
 	restoreCaretPosition(pos, editor);
 });
 editor.addEventListener("focus", function(e) {
@@ -187,8 +188,42 @@ editor.addEventListener("focus", function(e) {
 editor.addEventListener("blur", function(e) {
 	focused = false;
 });
+langChooser.addEventListener("change", function(e) {
+	e.preventDefault();
+	console.log(e.target.value);
+	if (e.target.value === "JavaScript") {
+		console.log("js");
+		html = editor.textContent;
+		pos = saveCaretPosition(editor);
+		editor.setAttribute("class", "language-javascript");
+		editor.innerHTML = editor.textContent;
+		Prism.highlightElement(editor);
+		restoreCaretPosition(pos, editor);
+		window.setTimeout(function() {
+			editor.focus();
+		}, 50);
+	}
+	if (e.target.value === "HTML") {
+		html = editor.textContent;
+		pos = saveCaretPosition(editor);
+		editor.setAttribute("class", "language-markup");
+		editor.innerHTML = editor.textContent;
+		Prism.highlightElement(editor);
+		restoreCaretPosition(pos, editor);
+		editor.focus();
+	}
+	if (e.target.value === "CSS") {
+		html = editor.textContent;
+		pos = saveCaretPosition(editor);
+		editor.setAttribute("class", "language-css");
+		editor.innerHTML = editor.textContent;
+		Prism.highlightElement(editor);
+		restoreCaretPosition(pos, editor);
+		editor.focus();
+	}
+});
 document.addEventListener("DOMContentLoaded", function(e) {
-	hljs.highlightBlock(editor);
+	Prism.highlightElement(editor);
 });
 window.addEventListener("load", function(e) {
 	editor.focus();
