@@ -114,7 +114,7 @@ const record = function() {
 	if (!focus) return;
 	html = editor.innerHTML;
 	pos = saveCaretPosition(editor);
-	console.log(pos);
+	;
 	last = incarnations[at];
 	if (last) {
 		if (last.html === html && last.pos === last.pos) {
@@ -123,8 +123,6 @@ const record = function() {
 	}
 	at++;
 	incarnations[at] = {html, pos};
-	console.log(incarnations[at]);
-	console.log(incarnations);
 };
 const waitToRecord = function(event) {
 	window.setTimeout(function(e) {
@@ -208,7 +206,7 @@ const waitToHighlight = function() {
 		splitText = editor.textContent.split("\n");
 		splitText = splitText.length;
 		num = "";
-		console.log(num);
+		
 		for (i = 0; i < splitText; i++) {
 			num+=String(i+1);
 		}
@@ -218,7 +216,7 @@ const waitToHighlight = function() {
 			num = num.join("");
 		}
 		document.querySelector("div#status-bar span#line").innerHTML = "Lines: " + testNum().split("").pop();
-		console.log(num);
+		
 		highlight();
 	}, 50);
 };
