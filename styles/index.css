@@ -37,9 +37,17 @@ div#editor {
 	line-height: 1.5em;
 	background-color: #272822;
 	color: white;
+	padding-left: 1.5rem;
+	position: relative;
 }
 div#editor:focus {
 	outline: none;
+}
+div#editor::before {
+	position: absolute;
+	opacity: 0.5;
+	right: 99%;
+	white-space: pre;
 }
 select {
 	-webkit-appearance: none;
@@ -58,6 +66,7 @@ div#status-bar {
 	line-height: 2em;
 	background-color: #bababa;
 	font-family: 'Open Sans', sans-serif;
+	box-shadow: 5px 5px 10px #484947;
 }
 div#status-bar * {
 	border: none;
@@ -67,6 +76,10 @@ div#status-bar * {
 	margin: auto;
 	display: inline-block;
 	padding: 0.5em;
+	cursor: pointer;
+}
+div#status-bar *:hover {
+	color: #279db5;
 }
 div#status-bar *:focus {
 	outline: none;

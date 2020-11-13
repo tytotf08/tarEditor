@@ -1,7 +1,8 @@
 "use strict"; 
 const editor = document.querySelector("div#editor");
-const langChooser = document.querySelector("select#lang"); 
-let NODE_TYPE, baseRange, c, currentLine, endOfLine, html, i, index, isInFocus, last, len, oldArray, pos, prefix, prev, r, range, rangeWeAreUsing, restore, savedRange, selection, splice, tabs, text, treeWalker;
+const langChooser = document.querySelector("select#lang");
+const fluidStyles = document.querySelector("style");
+let NODE_TYPE, baseRange, c, currentLine, endOfLine, html, i, index, isInFocus, last, len, oldArray, pos, prefix, prev, r, range, rangeWeAreUsing, restore, savedRange, selection, splice, tabs, text, treeWalker, gutterC, node;
 let focused = true;
 let atInfo = {};
 let incarnations = [];
@@ -9,10 +10,11 @@ let at = 0;
 let instanceIsComposing = false;
 let recording;
 let isInBrackets = false;
-let num = "1\n";
+let num = "";
 let line = 1;
 let splitText;
 let tester;
+let gutter;
 const diff = function() {
 	return prev !== editor.textContent;
 };
@@ -61,6 +63,7 @@ const handleKey = function(e) {
 			at = 0;
 		}
 	}
+	getLines();
 }
 const isJS = function() {
 	html = editor.textContent;
@@ -150,7 +153,7 @@ const saveCaretPosition = function(context){
 	return prefix.toString().length;
 };
 const restoreCaretPosition = function(pos, context) {
-	for (const node of context.childNodes) {
+	for (node of context.childNodes) {
 	  if (node.nodeType == Node.TEXT_NODE) {
 			if (node.length >= pos) {
 			  const range = document.createRange();
@@ -201,22 +204,34 @@ const highlight = function() {
 	Prism.highlightElement(editor);
 	restoreCaretPosition(pos, editor);
 };
-const waitToHighlight = function() {
-	window.setTimeout(function() {
+const getLines = function(e) {
+	if (diff()) {
 		splitText = editor.textContent.split("\n");
 		splitText = splitText.length;
-		num = "";
-		
+		num = [];
+		gutterC = "";
 		for (i = 0; i < splitText; i++) {
-			num+=String(i+1);
+			num.push(String(i+1));
 		}
-		if (num !== "1") {
-			num = num.split("")
+		if (num[-1] !== "1") {
 			num.pop();
-			num = num.join("");
 		}
-		document.querySelector("div#status-bar span#line").innerHTML = "Lines: " + testNum().split("").pop();
-		
+		if (num.length === 0) {
+			num.push("1");
+		}
+		console.log(num);
+		document.querySelector("div#status-bar span#line").innerHTML = "Lines: " + testNum().pop();
+		gutterC = "1\A";
+		for (i = 0; i < num.length; i++) {
+			gutterC += String(i+2) + "\A";
+		}
+		console.log(gutterC);
+		fluidStyles.innerHTML = "div#editor::before{content: \"" + gutterC + "\";}";
+	}
+}
+const waitToHighlight = function() {
+	window.setTimeout(function() {
+		getLines();
 		highlight();
 	}, 50);
 };
