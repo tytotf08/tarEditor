@@ -2,7 +2,8 @@
 const editor = document.querySelector("div#editor");
 const langChooser = document.querySelector("select#lang");
 const fluidStyles = document.querySelector("style");
-let NODE_TYPE, baseRange, c, currentLine, endOfLine, html, i, index, isInFocus, last, len, oldArray, pos, prefix, prev, r, range, rangeWeAreUsing, restore, savedRange, selection, splice, tabs, text, treeWalker, gutterC, node;
+let NODE_TYPE, baseRange, c, currentLine, currentLine1, currentLine2, lines, endOfLine, html, i, index, isInFocus, last, len, oldArray, pos, prefix, prev, r, range, rangeWeAreUsing, restore, savedRange, selection, splice, tabs, text, treeWalker, gutterC, node;
+let indexLines = "";
 let focused = true;
 let atInfo = {};
 let incarnations = [];
@@ -15,6 +16,7 @@ let line = 1;
 let splitText;
 let tester;
 let gutter;
+let checkLines = false;
 const diff = function() {
 	return prev !== editor.textContent;
 };
@@ -23,6 +25,7 @@ const testNum = function() {
 	return tester;
 };
 const handleKey = function(e) {
+	checkLines = false;
 	if (diff()) {
 		prev = editor.textContent;
 	}
@@ -33,13 +36,26 @@ const handleKey = function(e) {
 			insertText("\n"+tabs);
 		}
 	}
+	if (e.key === "Backspace") {
+		splice = beforeCursor(editor);
+		endOfLine = splice.lastIndexOf("\n");
+		currentLine = splice.substr(endOfLine+1);
+		currentLine1 = currentLine.split("");
+		currentLine1.pop();
+		currentLine1 = currentLine1.join();
+		if (!(currentLine1 === currentLine) && currentLine1 === "") {
+			document.execCommand("insertHTML", false, " ");
+			pos = saveCaretPosition(editor);
+			pos--;
+			restoreCaretPosition(pos, editor);
+		}
+		if (editor.textContent === "") {
+			e.preventDefault();
+		}
+	}
 	if (e.key === "Tab") {
 		e.preventDefault();
 		insertText("\t");
-	}
-	if (e.key === "Backspace") {
-		e.preventDefault();
-		document.execCommand("delete");
 	}
 	if (isRedo(e)) {
 		e.preventDefault();
@@ -63,7 +79,6 @@ const handleKey = function(e) {
 			at = 0;
 		}
 	}
-	getLines();
 }
 const isJS = function() {
 	html = editor.textContent;
@@ -132,7 +147,6 @@ const waitToRecord = function(event) {
 		highlight(); // so, if we undo to a non-highlighted token, it will always be highlighted
 		if (isTimeToRecord(event)) {
 			record();
-			recording = false;
 		}
 	}, 100);
 };
@@ -203,35 +217,16 @@ const highlight = function() {
 	editor.textContent = editor.textContent;
 	Prism.highlightElement(editor);
 	restoreCaretPosition(pos, editor);
-};
-const getLines = function(e) {
-	if (diff()) {
-		splitText = editor.textContent.split("\n");
-		splitText = splitText.length;
-		num = [];
-		gutterC = "";
-		for (i = 0; i < splitText; i++) {
-			num.push(String(i+1));
-		}
-		if (num[-1] !== "1") {
-			num.pop();
-		}
-		if (num.length === 0) {
-			num.push("1");
-		}
-		console.log(num);
-		document.querySelector("div#status-bar span#line").innerHTML = "Lines: " + testNum().pop();
-		gutterC = "1\A";
-		for (i = 0; i < num.length; i++) {
-			gutterC += String(i+2) + "\A";
-		}
-		console.log(gutterC);
-		fluidStyles.innerHTML = "div#editor::before{content: \"" + gutterC + "\";}";
+	lines = editor.textContent.split(/\n(?!$)/g).length;
+	indexLines = ["1\\00000a"];
+	for (i=1;i<lines;i++) {
+		indexLines.push((i+1)+"\\00000a");
 	}
-}
+	gutterC = indexLines.join("");
+	fluidStyles.innerHTML = "div#editor::before{content: \""+ gutterC + "\";}";
+};
 const waitToHighlight = function() {
 	window.setTimeout(function() {
-		getLines();
 		highlight();
 	}, 50);
 };

@@ -24,7 +24,7 @@ div#editor {
 	height: 75%;
 	white-space: pre;
 	overflow-x: auto;
-	overflow-y: auto;
+	overflow-y: scroll;
 	padding: 1em;
 	margin: auto;
 	font-family: Menlo, monospace;
@@ -37,8 +37,9 @@ div#editor {
 	line-height: 1.5em;
 	background-color: #272822;
 	color: white;
-	padding-left: 1.5rem;
+	padding-left: 1.5em;
 	position: relative;
+	-webkit-font-smoothing: antialiased;
 }
 div#editor:focus {
 	outline: none;
@@ -77,6 +78,7 @@ div#status-bar * {
 	display: inline-block;
 	padding: 0.5em;
 	cursor: pointer;
+	font-family: 'Open Sans', sans-serif;
 }
 div#status-bar *:hover {
 	color: #279db5;
