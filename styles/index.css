@@ -37,7 +37,7 @@ div#editor {
 	line-height: 1.5em;
 	background-color: #272822;
 	color: white;
-	padding-left: 1.5em;
+	padding-left: 2em;
 	position: relative;
 	-webkit-font-smoothing: antialiased;
 }
@@ -47,8 +47,11 @@ div#editor:focus {
 div#editor::before {
 	position: absolute;
 	opacity: 0.5;
-	right: 99%;
+	right: 97.5%;
 	white-space: pre;
+	text-align: center;
+	width: 2.5%;
+	-webkit-font-smoothing: none;
 }
 select {
 	-webkit-appearance: none;

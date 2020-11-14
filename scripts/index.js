@@ -16,7 +16,6 @@ let line = 1;
 let splitText;
 let tester;
 let gutter;
-let checkLines = false;
 const diff = function() {
 	return prev !== editor.textContent;
 };
@@ -25,7 +24,7 @@ const testNum = function() {
 	return tester;
 };
 const handleKey = function(e) {
-	checkLines = false;
+	getLines();
 	if (diff()) {
 		prev = editor.textContent;
 	}
@@ -35,6 +34,7 @@ const handleKey = function(e) {
 			e.preventDefault();
 			insertText("\n"+tabs);
 		}
+		getLines();
 	}
 	if (e.key === "Backspace") {
 		splice = beforeCursor(editor);
@@ -44,7 +44,7 @@ const handleKey = function(e) {
 		currentLine1.pop();
 		currentLine1 = currentLine1.join();
 		if (!(currentLine1 === currentLine) && currentLine1 === "") {
-			document.execCommand("insertHTML", false, " ");
+			insertText(" ");
 			pos = saveCaretPosition(editor);
 			pos--;
 			restoreCaretPosition(pos, editor);
@@ -67,6 +67,7 @@ const handleKey = function(e) {
 		if (at > incarnations.length) {
 			at--;
 		}
+		getLines();
 	}
 	if (isUndo(e)) {
 		e.preventDefault();
@@ -78,6 +79,7 @@ const handleKey = function(e) {
 		if (at < 0) {
 			at = 0;
 		}
+		getLines();
 	}
 }
 const isJS = function() {
@@ -211,12 +213,9 @@ const getLeadingTabs = function(context) {
 		tabs += "\t";
 	}
 	return tabs;
+	getLines();
 };
-const highlight = function() {
-	pos = saveCaretPosition(editor);
-	editor.textContent = editor.textContent;
-	Prism.highlightElement(editor);
-	restoreCaretPosition(pos, editor);
+const getLines = function() {
 	lines = editor.textContent.split(/\n(?!$)/g).length;
 	indexLines = ["1\\00000a"];
 	for (i=1;i<lines;i++) {
@@ -224,6 +223,14 @@ const highlight = function() {
 	}
 	gutterC = indexLines.join("");
 	fluidStyles.innerHTML = "div#editor::before{content: \""+ gutterC + "\";}";
+	document.querySelector("span#line").innerHTML = lines;
+}
+const highlight = function() {
+	pos = saveCaretPosition(editor);
+	editor.textContent = editor.textContent;
+	Prism.highlightElement(editor);
+	restoreCaretPosition(pos, editor);
+	getLines();
 };
 const waitToHighlight = function() {
 	window.setTimeout(function() {
@@ -241,6 +248,9 @@ editor.addEventListener("keyup", function(e) {
 		waitToHighlight();
 	}
 	waitToRecord(e);
+});
+editor.addEventListener("input", function(e) {
+	getLines();
 });
 editor.addEventListener("paste", function(e) {
 	e.preventDefault();
@@ -266,5 +276,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	Prism.highlightElement(editor);
 });
 window.addEventListener("load", function(e) {
+	getLines();
 	editor.focus();
 });
