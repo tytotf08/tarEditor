@@ -1,4 +1,4 @@
-# Tar Editor Version 1.1.4
+# Tar Editor Version 1.1.5
 
 Tar Editor is a stable front-end text editor. It doesn't utilize any libraries except for Prism, which we may migrate away from soon, 
 
