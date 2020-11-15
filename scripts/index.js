@@ -2,26 +2,14 @@
 const editor = document.querySelector("div#editor");
 const langChooser = document.querySelector("select#lang");
 const fluidStyles = document.querySelector("style");
-let NODE_TYPE, baseRange, c, currentLine, currentLine1, currentLine2, lines, endOfLine, html, i, index, isInFocus, last, len, oldArray, pos, prefix, prev, r, range, rangeWeAreUsing, restore, savedRange, selection, splice, tabs, text, treeWalker, gutterC, node;
+let baseRange,c,currentLine,currentLine1,currentLine2,endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker;
 let indexLines = "";
 let focused = true;
-let atInfo = {};
 let incarnations = [];
 let at = 0;
-let instanceIsComposing = false;
-let recording;
-let isInBrackets = false;
-let num = "";
-let line = 1;
-let splitText;
-let tester;
 let gutter;
 const diff = function() {
 	return prev !== editor.textContent;
-};
-const testNum = function() {
-	tester = num;
-	return tester;
 };
 const handleKey = function(e) {
 	getLines();
