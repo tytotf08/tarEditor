@@ -25,6 +25,7 @@
 .token.command,
 .token.code {
   color: #66d9ef;
+  font-style: italic;
 }
 
 .token.regex,

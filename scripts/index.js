@@ -2,7 +2,7 @@
 const editor = document.querySelector("div#editor");
 const langChooser = document.querySelector("select#lang");
 const fluidStyles = document.querySelector("style");
-let baseRange,c,currentLine,currentLine1,currentLine2,endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker;
+let baseRange,c,currentLine,currentLine1,currentLine2,poppedSplice, endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker;
 let indexLines = "";
 let focused = true;
 let incarnations = [];
@@ -16,7 +16,7 @@ const handleKey = function(e) {
 	if (diff()) {
 		prev = editor.textContent;
 	}
-	if (e.key === "Enter") {
+	if (e.key === "Enter") {	
 		tabs = getLeadingTabs(editor);
 		if (tabs.length > 0) {
 			e.preventDefault();
@@ -24,26 +24,27 @@ const handleKey = function(e) {
 		}
 		getLines();
 	}
-	if (e.key === "Backspace") {
-		splice = beforeCursor(editor);
-		endOfLine = splice.lastIndexOf("\n");
-		currentLine = splice.substr(endOfLine+1);
-		currentLine1 = currentLine.split("");
-		currentLine1.pop();
-		currentLine1 = currentLine1.join();
-		if (!(currentLine1 === currentLine) && currentLine1 === "") {
-			insertText(" ");
-			pos = saveCaretPosition(editor);
-			pos--;
-			restoreCaretPosition(pos, editor);
-		}
-		if (editor.textContent === "") {
-			e.preventDefault();
-		}
-	}
 	if (e.key === "Tab") {
 		e.preventDefault();
-		insertText("\t");
+
+		if (e.shiftKey) {
+			pos = saveCaretPosition(editor);
+			html = editor.textContent;
+			splice = beforeCursor(editor);
+			endOfLine = splice.lastIndexOf("\n");
+			console.log(endOfLine);
+			splice = splice.split("\n");
+			console.log(splice);
+			if (splice[splice.length-1].startsWith("\t")) {
+				splice[splice.length-1] = splice[splice.length-1].substring(1);
+				editor.textContent = html.replace(beforeCursor(editor), splice.join("\n"));
+				Prism.highlightElement(editor);
+				restoreCaretPosition(pos-1, editor);
+				getLines();
+			}
+		} else {
+			insertText("\t");
+		}
 	}
 	if (isRedo(e)) {
 		e.preventDefault();
@@ -186,6 +187,32 @@ const beforeCursor = function(context) {
 	rangeWeAreUsing.setEnd(baseRange.startContainer, baseRange.startOffset);
 	return String(rangeWeAreUsing);
 };
+function afterCursor(context) {
+  baseRange = window.getSelection().getRangeAt(0);
+	rangeWeAreUsing = document.createRange();
+	rangeWeAreUsing.selectNodeContents(context);
+	rangeWeAreUsing.setEnd(baseRange.endContainer, baseRange.startOffset);
+	return String(rangeWeAreUsing);
+ }
+const hasLeadingTabs = function(context) {
+	splice = beforeCursor(context);
+	endOfLine = splice.lastIndexOf("\n");
+
+	currentLine = splice.substr(endOfLine+1);
+	return currentLine.charAt(0) === "\t";
+};
+const findPadding = function(text) {
+    // Find beginning of previous line.
+    let i = text.length - 1;
+    while (i >= 0 && text[i] !== "\n")
+        i--;
+    i++;
+    // Find padding of the line.
+    let j = i;
+    while (j < text.length && /[ \t]/.test(text[j]))
+        j++;
+    return [text.substring(i, j) || "", i, j];
+}
 const getLeadingTabs = function(context) {
 	splice = beforeCursor(context);
 	endOfLine = splice.lastIndexOf("\n");
@@ -201,7 +228,6 @@ const getLeadingTabs = function(context) {
 		tabs += "\t";
 	}
 	return tabs;
-	getLines();
 };
 const getLines = function() {
 	lines = editor.textContent.split(/\n(?!$)/g).length;
