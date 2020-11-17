@@ -37,6 +37,7 @@ div#editor {
 	line-height: 1.5em;
 	background-color: #272822;
 	color: white;
+	font-size: 1em;
 	padding-left: 2em;
 	position: relative;
 	-webkit-font-smoothing: antialiased;

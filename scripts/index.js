@@ -22,7 +22,11 @@ const handleKey = function(e) {
 			e.preventDefault();
 			insertText("\n"+tabs);
 		}
+		pos = saveCaretPosition(editor);
+		e.preventDefault();
+		insertText("\n ");
 		getLines();
+		restoreCaretPosition(pos-1, editor);
 	}
 	if (e.key === "Tab") {
 		e.preventDefault();
@@ -201,18 +205,6 @@ const hasLeadingTabs = function(context) {
 	currentLine = splice.substr(endOfLine+1);
 	return currentLine.charAt(0) === "\t";
 };
-const findPadding = function(text) {
-    // Find beginning of previous line.
-    let i = text.length - 1;
-    while (i >= 0 && text[i] !== "\n")
-        i--;
-    i++;
-    // Find padding of the line.
-    let j = i;
-    while (j < text.length && /[ \t]/.test(text[j]))
-        j++;
-    return [text.substring(i, j) || "", i, j];
-}
 const getLeadingTabs = function(context) {
 	splice = beforeCursor(context);
 	endOfLine = splice.lastIndexOf("\n");
@@ -265,6 +257,7 @@ editor.addEventListener("keyup", function(e) {
 });
 editor.addEventListener("input", function(e) {
 	getLines();
+	highlight();
 });
 editor.addEventListener("paste", function(e) {
 	e.preventDefault();
@@ -290,6 +283,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	Prism.highlightElement(editor);
 });
 window.addEventListener("load", function(e) {
+	editor.textContent = " "
 	getLines();
 	editor.focus();
 });
