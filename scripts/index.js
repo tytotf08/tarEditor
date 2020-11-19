@@ -2,12 +2,19 @@
 const editor = document.querySelector("div#editor");
 const langChooser = document.querySelector("select#lang");
 const fluidStyles = document.querySelector("style");
-let baseRange,c,currentLine,currentLine1,currentLine2,poppedSplice, endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker;
+let baseRange,c,currentLine,currentLine1,currentLine2, sel, endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker;
 let indexLines = "";
 let focused = true;
 let incarnations = [];
 let at = 0;
 let gutter;
+const autoComplete = [
+	{open: "{", close: "}"}, 
+	{open: "\"", close: "\""}, 
+	{open: "'", close: "'"}, 
+	{open: "`", close: "`"},
+	{open: "[", close: "]"}
+];
 const diff = function() {
 	return prev !== editor.textContent;
 };
@@ -20,13 +27,25 @@ const handleKey = function(e) {
 		tabs = getLeadingTabs(editor);
 		if (tabs.length > 0) {
 			e.preventDefault();
-			insertText("\n"+tabs);
+			if (tabs.includes("\n")) {
+				insertText("\n"+tabs);
+				pos = saveCaretPosition(editor);
+				restoreCaretPosition(pos-1, editor);
+			} else {
+				insertText("\n"+tabs);
+			}
 		}
 		pos = saveCaretPosition(editor);
-		e.preventDefault();
-		insertText("\n ");
 		getLines();
-		restoreCaretPosition(pos-1, editor);
+	}
+	for (i = 0; i < autoComplete.length; i++) {
+		if (e.key === autoComplete[i].open) {
+			e.preventDefault();
+			insertText(autoComplete[i].open + autoComplete[i].close);
+			pos = saveCaretPosition(editor);
+			restoreCaretPosition(pos-1, editor);
+			break;
+		}
 	}
 	if (e.key === "Tab") {
 		e.preventDefault();
@@ -39,12 +58,14 @@ const handleKey = function(e) {
 			console.log(endOfLine);
 			splice = splice.split("\n");
 			console.log(splice);
-			if (splice[splice.length-1].startsWith("\t")) {
-				splice[splice.length-1] = splice[splice.length-1].substring(1);
+			currentLine = splice[splice.length-1];
+			if (currentLine.startsWith("\t")) {
+				splice[splice.length-1] = currentLine.substring(1);
 				editor.textContent = html.replace(beforeCursor(editor), splice.join("\n"));
 				Prism.highlightElement(editor);
 				restoreCaretPosition(pos-1, editor);
 				getLines();
+
 			}
 		} else {
 			insertText("\t");
@@ -165,8 +186,8 @@ const restoreCaretPosition = function(pos, context) {
 	for (node of context.childNodes) {
 	  if (node.nodeType == Node.TEXT_NODE) {
 			if (node.length >= pos) {
-			  const range = document.createRange();
-			  const sel = window.getSelection();
+			  range = document.createRange();
+			  sel = window.getSelection();
 			  range.setStart(node, pos);
 			  range.collapse(true);
 			  sel.removeAllRanges();
@@ -175,28 +196,22 @@ const restoreCaretPosition = function(pos, context) {
 			} else {
 			  pos = pos - node.length;
 			}
-		  } else {
+		} else {
 			pos = restoreCaretPosition(pos, node);
 			if (pos < 0) {
-			  return pos;
+				return pos;
 			}
 	  }
 	}
 	return pos;
 };
 const beforeCursor = function(context) {
-	baseRange = window.getSelection().getRangeAt(0);
-	rangeWeAreUsing = document.createRange();
-	rangeWeAreUsing.selectNodeContents(context);
-	rangeWeAreUsing.setEnd(baseRange.startContainer, baseRange.startOffset);
-	return String(rangeWeAreUsing);
+	range = window.getSelection().getRangeAt(0);
+	return String(range.startContainer.textContent.substring(0, range.startOffset));
 };
 function afterCursor(context) {
-  baseRange = window.getSelection().getRangeAt(0);
-	rangeWeAreUsing = document.createRange();
-	rangeWeAreUsing.selectNodeContents(context);
-	rangeWeAreUsing.setEnd(baseRange.endContainer, baseRange.startOffset);
-	return String(rangeWeAreUsing);
+  range = window.getSelection().getRangeAt(0);
+	return String(range.startContainer.textContent.substring(0, range.endOffset));
  }
 const hasLeadingTabs = function(context) {
 	splice = beforeCursor(context);
@@ -216,8 +231,8 @@ const getLeadingTabs = function(context) {
 	while (currentLine.charAt(index++) === "\t") {
 		tabs += "\t";
 	}
-	if (currentLine.trim().endsWith("{")) {
-		tabs += "\t";
+	if (currentLine.trim().endsWith("{") || currentLine.trim().endsWith("[")) {
+		tabs += "\t\n\n";
 	}
 	return tabs;
 };
@@ -283,7 +298,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	Prism.highlightElement(editor);
 });
 window.addEventListener("load", function(e) {
-	editor.textContent = " "
 	getLines();
 	editor.focus();
 });
