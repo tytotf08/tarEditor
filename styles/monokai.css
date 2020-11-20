@@ -1,90 +1,75 @@
 .token.comment,
-.token.blockquote,
-.token.shebang.important,
-.token.shebang {
-  color: #75715e;
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #8292a2;
 }
 
-.token.operator,
-.token.important,
-.token.keyword,
-.token.rule,
+.token.punctuation {
+  color: #f8f8f2;
+}
+
+.token.namespace {
+  opacity: .7;
+}
+
+.token.property,
 .token.tag,
-.token.deleted,
-.token.selector,
-.token.prolog,
-.token.title .token.punctuation,
-.token.doctype-tag {
+.token.constant,
+.token.symbol,
+.token.deleted {
   color: #f92672;
 }
 
-
-.token.property,
-.token.entity,
-.token.atrule,
-.token.command,
-.token.code {
-  color: #66d9ef;
-  font-style: italic;
-}
-
-.token.regex,
-.token.atrule .token.property {
-  color: #fd971f;
-}
-
-.token.pseudo-element,
-.token.id,
-.token.class,
-.token.class-name,
-.token.pseudo-class,
-.token.function,
-.token.namespace,
-.token.inserted,
-.token.symbol,
-.token.url-reference .token.variable,
-.token.attr-name {
-  color: #a6e22e;
-}
-
-.token.string,
-.token.url,
-.token.list,
-.token.cdata,
-.token.attr-value,
-.token.attr-value a.token.url-link {
-  color: #e6db74;
-}
-
-.token.constant,
-.token.hexcode,
-.token.builtin,
-.token.number,
 .token.boolean,
-.token.doctype .token.name {
+.token.number {
   color: #ae81ff;
 }
 
-.token.doctype,
-.token.punctuation,
-.token.variable,
-.token.macro.property {
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #e6db74;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
   color: #f8f8f2;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.function,
+.token.class-name {
+  color: #a6e22e;
+}
+
+.token.keyword {
+  color: #66d9ef;
+}
+
+.token.regex,
+.token.important {
+  color: #fd971f;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+.token.italic {
+  font-style: italic;
 }
 
 .token.entity {
   cursor: help;
 }
 
-.token.title,
-.token.title .token.punctuation {
-  font-weight: bold;
-}
-
-.token.bold {
-  font-weight: bold;
-}
-
-.token.italic {
-  font-style: italic;
-}
+DOWNLOAD
