@@ -1,7 +1,6 @@
 "use strict"; 
 const editor = document.querySelector("div#editor");
-const langChooser = document.querySelector("select#lang");
-const fluidStyles = document.querySelector("style");
+const line_numbers = document.querySelector("textarea#line-numbers");
 let baseRange,c,currentLine,currentLine1,currentLine2, sel, endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker;
 let indexLines = "";
 let focused = true;
@@ -238,13 +237,13 @@ const getLeadingTabs = function(context) {
 };
 const getLines = function() {
 	lines = editor.textContent.split(/\n(?!$)/g).length;
-	indexLines = ["1\\00000a"];
+	indexLines = ["1\n"];
 	for (i=1;i<lines;i++) {
-		indexLines.push((i+1)+"\\00000a");
+		indexLines.push((i+1)+"\n");
 	}
 	gutterC = indexLines.join("");
-	fluidStyles.innerHTML = "div#editor::before{content: \""+ gutterC + "\";}";
-	document.querySelector("span#line").innerHTML = lines;
+	line_numbers.value = gutterC;
+	// fluidStyles.innerHTML = "div#editor::before{content: \""+ gutterC + "\";}";
 }
 const highlight = function() {
 	pos = saveCaretPosition(editor);
@@ -282,17 +281,26 @@ editor.addEventListener("paste", function(e) {
 	Prism.highlightElement(editor);
 	restoreCaretPosition(pos, editor);
 });
+editor.addEventListener("scroll", function(e) {
+	line_numbers.scrollTop = e.target.scrollTop;
+});
 editor.addEventListener("focus", function(e) {
 	focused = true;
 });
 editor.addEventListener("blur", function(e) {
 	focused = false;
 });
-langChooser.addEventListener("change", function(e) {
-	e.preventDefault();
-	if (e.target.value === "JavaScript") isJS();
-	if (e.target.value === "HTML") isHTML();
-	if (e.target.value === "CSS") isCSS();;
+document.querySelector("select#lang").addEventListener("change", function(e) {
+	if (this.value === "JavaScript") {
+		console.log("f");
+		isJS();
+	}
+	if (this.value === "HTML") {
+		isHTML();
+	}
+	if (this.value === "CSS") {
+		isCSS();
+	}
 });
 document.addEventListener("DOMContentLoaded", function(e) {
 	Prism.highlightElement(editor);
