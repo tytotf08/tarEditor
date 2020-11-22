@@ -41,10 +41,16 @@ try {
 		for (i = 0; i < autoComplete.length; i++) {
 			if (e.key === autoComplete[i].open) {
 				e.preventDefault();
-				insertText(autoComplete[i].open + autoComplete[i].close);
-				pos = saveCaretPosition(editor);
-				restoreCaretPosition(pos-1, editor);
-				break;
+				if (afterCursor().startsWith(autoComplete[i].open)) {
+					pos = saveCaretPosition(editor);
+					restoreCaretPosition(pos+1, editor);
+					break;
+				} else {
+					insertText(autoComplete[i].open + autoComplete[i].close);
+					pos = saveCaretPosition(editor);
+					restoreCaretPosition(pos-1, editor);
+					break;
+				}
 			}
 		}
 		if (e.key === "Tab") {
@@ -108,10 +114,9 @@ try {
 		}, 50);
 	}
 	const isHTML = function() {
-		html = editor.textContent;
 		pos = saveCaretPosition(editor);
-		editor.setAttribute("class", "language-markup");
 		editor.innerHTML = editor.textContent;
+		editor.setAttribute("class", "language-markup");
 		Prism.highlightElement(editor);
 		restoreCaretPosition(pos, editor);
 		window.setTimeout(function() {
@@ -291,9 +296,6 @@ try {
 		pos = saveCaretPosition(editor);
 		Prism.highlightElement(editor);
 		restoreCaretPosition(pos, editor);
-	});
-	editor.addEventListener("scroll", function(e) {
-		line_numbers.scrollTop = e.target.scrollTop;
 	});
 	editor.addEventListener("focus", function(e) {
 		focused = true;

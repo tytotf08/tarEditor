@@ -4,6 +4,11 @@ html, body {
 	height: 100%;
 	padding: 0px;
 	overflow: hidden;
+}
+main {
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -12,37 +17,40 @@ html, body {
   background-color: #000000;
 }
 div#wrap {
-	margin: auto;
-	display: flex;
+	display: flex !important;
+	align-items: flex-start !important;
+	overflow: auto;
 	width: 100%;
-	height: 98%;
+	height: 97%;
 	padding: 0px;
-	border: hidden;
-	overflow: scroll;
+	margin: 0px;
 	background-color: #272822;
-	border-top-left-radius: 0.25rem;
-	border-top-right-radius: 0.25rem;
+	position: relative;
 }
 div#wrap div#editor {
 	flex: 95.25%;
+	display: block;
 	margin: 0px;
-	background-color: transparent;
 	padding: 1rem;
-	overflow: auto;
+	background-color: #272822;
 	border: none;
 	color: white;
+	min-height: 97.675%;
 	font-family: Menlo, monospace;
 	-webkit-font-smoothing: antialiased;
 	border-radius: none;
 	line-height: 1.5rem;
 	tab-size: 4;
 	white-space: pre;
+	padding-bottom: 0px;
+	overflow: hidden;
 }
 div#wrap div#editor:focus {
 	outline: none;
 }
 div#wrap div#line-numbers {
 	flex: 4.75%;
+	width: 4.75%;
 	resize: none;
 	margin: 0px;
 	display: block;
@@ -54,13 +62,19 @@ div#wrap div#line-numbers {
 	font-family: Menlo, monospace;
 	white-space: pre;
 	padding-top: 1rem;
-	overflow: hidden;
-	border-right: 1px dotted #e8e8e8;
-	color: white;
+	border-right: 0.5px dotted #5e5e5e;
+	color: #919191;
 	-webkit-font-smoothing: antialiased;
 	-webkit-user-select: none;
 	opacity: 0.5;
 	cursor: default;
+	font-weight: bold;
+	position: -webkit-sticky;
+	display: block;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+	min-height: 97.675%;
 }
 div#wrap div#line-numbers::-webkit-scrollbar {
 	display: none;
