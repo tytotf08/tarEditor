@@ -7,17 +7,15 @@
 </head>
 <body>
 	<main>
-		<!-- <div id = "bigwrap"> -->
-			<div id = "wrap">
-				<div id = "line-numbers"></div>
-				<div id = "editor" class = "language-javascript" contenteditable = "plaintext-only" spellcheck = "false"></div>
-			</div>
-		<!-- </div> -->
+		<div id = "wrap">
+			<div id = "line-numbers"></div>
+			<div id = "editor" class = "language-javascript" contenteditable = "plaintext-only" spellcheck = "false"></div>
+		</div>
 		<div id = "status-bar">
 			<div id = "select-lang">
 				<label>
 					<select id = "lang">
-						<optgroup label = "Choose a language:">
+						<optgroup label = "Change language:">
 							<option>JavaScript</option>
 							<option>HTML</option>
 							<option>CSS</option>
@@ -25,7 +23,7 @@
 					</select>
 				</label>
 			</div>
-			<div id = "lines">1</div>
+			<div id = "lines">Lines: 1</div>
 		</div>
 	</main>
 	<script src = "./scripts/prism.js"></script>
