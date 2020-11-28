@@ -13,7 +13,9 @@
 .namespace {
   opacity: .7;
 }
-
+.token.operator {
+  color: #f92472;
+}
 .token.property,
 .token.tag,
 .token.constant,
@@ -36,7 +38,6 @@
   color: #A6E22E;
 }
 
-.token.operator,
 .token.entity,
 .token.url,
 .language-css .token.string,

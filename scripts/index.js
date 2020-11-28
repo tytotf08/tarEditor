@@ -1,7 +1,7 @@
 "use strict";
 const editor = document.querySelector("div#editor");
 const line_numbers = document.querySelector("div#line-numbers");
-let baseRange,c,currentLine,currentLine1,currentLine2, sel, endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker;
+let baseRange,c,currentLine,currentLine1,currentLine2, sel, endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker,theKey;
 let indexLines = "";
 let focused = true;
 let incarnations = [{html:"", pos: 0}];
@@ -24,6 +24,18 @@ const handleKey = function(e) {
 	getLines();
 	if (diff()) {
 		prev = editor.textContent;
+	}
+	if (e.key === ">" && editor.getAttribute("class").includes("markup")) {
+		text = beforeCursor().split(">");
+		console.log(text);
+		if (text[text.length-1] !== "") {
+			if (text[text.length-1].replace("\s", "").startsWith("<")) {
+				e.preventDefault();
+				insertText("></"+text[text.length-1].replace("<", "")+">");
+				pos = saveCaretPosition(editor);
+				restoreCaretPosition(pos-text[text.length-1].replace("<", "").length-3, editor);
+			}
+		}  
 	}
 	if (e.key === "Enter") {	
 		splice = beforeCursor(editor);
@@ -59,10 +71,20 @@ const handleKey = function(e) {
 				restoreCaretPosition(pos+1, editor);
 				break;
 			} else {
-				insertText(autoComplete[i].open + autoComplete[i].close);
-				pos = saveCaretPosition(editor);
-				restoreCaretPosition(pos-1, editor);
-				break;
+				if (String(window.getSelection()) === "") {
+					insertText(autoComplete[i].open + autoComplete[i].close);
+					pos = saveCaretPosition(editor);
+					restoreCaretPosition(pos-1, editor);
+					break;
+				} else {
+					theKey = autoComplete[i];
+					sel = String(window.getSelection());
+					document.execCommand("delete");
+					insertText(theKey.open+sel+theKey.close);
+					pos = saveCaretPosition(editor);
+					restoreCaretPosition(pos-1, editor);
+					break;
+				}
 			}
 		}
 		if (e.key === autoComplete[i].close) {
@@ -117,7 +139,13 @@ const handleKey = function(e) {
 
 			}
 		} else {
-			insertText("\t");
+			if (String(window.getSelection()) === "") {
+				insertText("\t");
+			} else {
+				sel = String(window.getSelection());
+				document.execCommand("delete");
+				insertText("\t" + sel);
+			}
 		}
 	}
 	if (isRedo(e)) {

@@ -1,5 +1,7 @@
 # Tar Editor 
 
-Tar Editor is an iframe-based JavaScript editor.
+Tar Editor is a web-based JavaScript editor.
 
-It is built to utilize the latest JavaScript technologies and be as light as possible, while still being quite the capable editor.
+We've built an editor, and the next step is to make it so that you can implement in a site.
+
+It has line numbers, a status bar, and smart key handling.
