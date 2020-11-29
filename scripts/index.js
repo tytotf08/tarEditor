@@ -109,11 +109,6 @@ const handleKey = function(e) {
 			}
 			break;
 		}
-		if (e.key === "Backspace" && beforeCursor().endsWith(autoComplete[i].open + autoComplete[i].close)) {
-			for (i = 0; i < 2; i++) {
-				document.execCommand("delete");
-			}
-		}
 	}
 	if (e.key === "Backspace") {
 		if (beforeCursor().split("\n")[beforeCursor().split("\n").length-1].length === 1 && !editor.textContent.length === 1) {
@@ -121,6 +116,9 @@ const handleKey = function(e) {
 			document.execCommand("delete");
 			insertText("\n\n");
 		}
+	}
+	if (e.ctrlKey && e.key === "r") {
+		console.log("f");
 	}
 	if (e.key === "Tab") {
 		e.preventDefault();
@@ -178,7 +176,7 @@ const handleKey = function(e) {
 		}
 		getLines();
 	}
-}
+};
 const switchLanguage = function(lang) {
 	pos = saveCaretPosition(editor);
 	editor.setAttribute("class", "language-"+lang);
@@ -367,14 +365,15 @@ editor.addEventListener("blur", function(e) {
 document.querySelector("div#wrap").addEventListener("scroll", function(e) {
 	editorScrollBottom = this.scrollTop + window.innerHeight - window.getComputedStyle(document.querySelector("div#status-bar"), null).height.replace(/[a-z]/g, "")
 	if (this.scrollTop < 0) {
-		// elastic scroll on top
 		e.preventDefault();
 		this.scrollTop = 0;
 	} else if (editorScrollBottom > editor.scrollHeight) {
-		// elastic scroll on bottom
 		e.preventDefault();
 		this.scrollTop = editorScrollBottom;			
 	}
+});
+document.querySelector("div#r").addEventListener("click", function(e) {
+	window.open(" ", "_blank").document.write(editor.textContent || "");
 });
 document.querySelector("select#lang").addEventListener("change", function(e) {
 	if (this.value === "JavaScript") {
