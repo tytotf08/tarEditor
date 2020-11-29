@@ -27,13 +27,16 @@ const handleKey = function(e) {
 	}
 	if (e.key === ">" && editor.getAttribute("class").includes("markup")) {
 		text = beforeCursor().split(">");
-		console.log(text);
 		if (text[text.length-1] !== "") {
-			if (text[text.length-1].replace("\s", "").startsWith("<")) {
+			if (text[text.length-1].trim().startsWith("<")) {
 				e.preventDefault();
-				insertText("></"+text[text.length-1].replace("<", "")+">");
-				pos = saveCaretPosition(editor);
-				restoreCaretPosition(pos-text[text.length-1].replace("<", "").length-3, editor);
+				if (text[text.length-1] === "<!DOCTYPE html") {
+					insertText(">");
+				} else {
+					insertText("></"+text[text.length-1].replace("<", "").trim()+">");
+					pos = saveCaretPosition(editor);
+					restoreCaretPosition(pos-text[text.length-1].replace("<", "").trim().length-3, editor);
+				}
 			}
 		}  
 	}
