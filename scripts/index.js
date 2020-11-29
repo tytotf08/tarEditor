@@ -46,9 +46,10 @@ const handleKey = function(e) {
 
 		currentLine = splice.substr(endOfLine+1);
 		tabs = getLeadingTabs(editor);
+		console.log(currentLine.split("<"));
 		if (tabs.length > 0) {
 			e.preventDefault();
-			if (currentLine.replace(/\s/g, "").endsWith("{") || currentLine.replace(/\s/g, "").endsWith("[")) {
+			if ((currentLine.replace(/\s/g, "").endsWith("{") || currentLine.replace(/\s/g, "").endsWith("[")) || editor.getAttribute("class").includes("markup") && currentLine.split("<")[currentLine.split("<").length-1].length > 1 && currentLine.split("<")[currentLine.split("<").length-1].endsWith(">")) {
 				insertText("\n"+tabs+"\t\n"+tabs);
 				console.log(tabs);
 				pos = saveCaretPosition(editor);
@@ -57,7 +58,7 @@ const handleKey = function(e) {
 				insertText("\n"+tabs);
 			}
 		} else {
-			if (currentLine.replace(/\s/g, "").endsWith("{") || currentLine.replace(/\s/g, "").endsWith("[")) {
+			if ((currentLine.replace(/\s/g, "").endsWith("{") || currentLine.replace(/\s/g, "").endsWith("[")) || editor.getAttribute("class").includes("markup") && currentLine.split("<")[currentLine.split("<").length-1].length > 1 && currentLine.split("<")[currentLine.split("<").length-1].endsWith(">")) {
 				e.preventDefault();
 				insertText("\n\t\n\n");
 				pos = saveCaretPosition(editor);

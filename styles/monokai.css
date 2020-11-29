@@ -16,7 +16,7 @@
 .token.operator {
   color: #f92472;
 }
-.token.property,
+
 .token.tag,
 .token.constant,
 .token.symbol,
@@ -29,7 +29,7 @@
   color: #AE81FF;
 }
 
-.token.selector,
+.token.property,
 .token.attr-name,
 .token.function,
 .token.char,
@@ -37,6 +37,10 @@
 .token.inserted {
   color: #A6E22E;
 }
+.token.selector {
+  color: #f92472;
+}
+
 
 .token.entity,
 .token.url,
