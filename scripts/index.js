@@ -1,7 +1,7 @@
 "use strict";
 const editor = document.querySelector("div#editor");
 const line_numbers = document.querySelector("div#line-numbers");
-let baseRange,c,currentLine,currentLine1,currentLine2, sel, endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker,theKey;
+let baseRange,c,currentLine,currentLine1,currentLine2, sel, endOfLine,gutterC,html,i,index,last,len,lines,node,NODE_TYPE,pos,prefix,prev,r,range,rangeWeAreUsing,restore,savedRange,splice,tabs,text,treeWalker,theKey,tabEl, el;
 let indexLines = "";
 let focused = true;
 let incarnations = [{html:"", pos: 0}];
@@ -33,9 +33,9 @@ const handleKey = function(e) {
 				if (text[text.length-1] === "<!DOCTYPE html") {
 					insertText(">");
 				} else {
-					insertText("></"+text[text.length-1].replace("<", "").trim()+">");
+					insertText("></"+text[text.length-1].replace("<", "").trim().split(" ")[0]+">");
 					pos = saveCaretPosition(editor);
-					restoreCaretPosition(pos-text[text.length-1].replace("<", "").trim().length-3, editor);
+					restoreCaretPosition(pos-text[text.length-1].split(" ")[0].replace("<", "").trim().length-3, editor);
 				}
 			}
 		}  
@@ -46,12 +46,10 @@ const handleKey = function(e) {
 
 		currentLine = splice.substr(endOfLine+1);
 		tabs = getLeadingTabs(editor);
-		console.log(currentLine.split("<"));
 		if (tabs.length > 0) {
 			e.preventDefault();
 			if ((currentLine.replace(/\s/g, "").endsWith("{") || currentLine.replace(/\s/g, "").endsWith("[")) || editor.getAttribute("class").includes("markup") && currentLine.split("<")[currentLine.split("<").length-1].length > 1 && currentLine.split("<")[currentLine.split("<").length-1].endsWith(">")) {
 				insertText("\n"+tabs+"\t\n"+tabs);
-				console.log(tabs);
 				pos = saveCaretPosition(editor);
 				restoreCaretPosition(pos-(tabs.length+1), editor);
 			} else {
@@ -117,9 +115,6 @@ const handleKey = function(e) {
 			insertText("\n\n");
 		}
 	}
-	if (e.ctrlKey && e.key === "r") {
-		console.log("f");
-	}
 	if (e.key === "Tab") {
 		e.preventDefault();
 
@@ -128,9 +123,7 @@ const handleKey = function(e) {
 			html = editor.textContent;
 			splice = beforeCursor(editor);
 			endOfLine = splice.lastIndexOf("\n");
-			console.log(endOfLine);
 			splice = splice.split("\n");
-			console.log(splice);
 			currentLine = splice[splice.length-1];
 			if (currentLine.startsWith("\t")) {
 				splice[splice.length-1] = currentLine.substring(1);
@@ -163,10 +156,8 @@ const handleKey = function(e) {
 		getLines();
 	}
 	if (isUndo(e)) {
-		console.log(at);
 		e.preventDefault();
 		at--;
-		console.log(at);
 		if (incarnations[at]) {
 			editor.innerHTML = incarnations[at].html;
 			restoreCaretPosition(incarnations[at].pos, editor);
@@ -377,7 +368,6 @@ document.querySelector("div#r").addEventListener("click", function(e) {
 });
 document.querySelector("select#lang").addEventListener("change", function(e) {
 	if (this.value === "JavaScript") {
-		console.log("f");
 		isJS();
 	}
 	if (this.value === "HTML") {
@@ -387,10 +377,58 @@ document.querySelector("select#lang").addEventListener("change", function(e) {
 		isCSS();
 	}
 });
+document.addEventListener("keydown", function(e) {
+	if (e.ctrlKey && e.key === "r") {
+		document.querySelector("div#r").dispatchEvent(new Event("click"));
+	}
+	if ((e.metaKey || e.ctrlKey) && e.key === "~") {
+		tabEl = document.createElement("DIV");
+		tabEl.setAttribute("class", "tab");
+		tabEl.innerHTML = "untitled";
+		tabEl.thisvalue = {};
+		tabEl.addEventListener("click", function(e) {
+			document.querySelectorAll("div.tab").forEach(function(el) {
+				console.log("red");
+				console.log(el);
+				el.style.backgroundColor = "#500860";
+			});
+			e.target.style.backgroundColor = "#11085e";
+		});
+		document.querySelector("div#tabs").appendChild(tabEl);
+		tabEl.dispatchEvent(new Event("click"));
+	}
+	if (isCmd(e) && e.key === "e") {
+		for (i = 0; i < document.querySelectorAll("div.tab").length; i++) {
+			el = document.querySelectorAll("div.tab")[i];
+			if (document.querySelectorAll("div.tab").length < 2) {
+				break;
+			}
+			if (document.querySelectorAll("div.tab")[i+1].style.backgroundColor === "rgb(17, 8, 94)") {
+				document.querySelectorAll("div.tab")[i+1].remove();
+				el.style.backgroundColor = "#11085e";
+				break;
+			}
+		}
+	}
+});
 document.addEventListener("DOMContentLoaded", function(e) {
 	Prism.highlightElement(editor);
 });
 window.addEventListener("load", function(e) {
 	getLines();
 	editor.focus();
+	tabEl = document.createElement("DIV");
+	tabEl.setAttribute("class", "tab");
+	tabEl.innerHTML = "untitled";
+	tabEl.thisvalue = "";
+	tabEl.addEventListener("click", function(e) {
+		document.querySelectorAll("div.tab").forEach(function(el) {
+			console.log("red");
+			console.log(el);
+			el.style.backgroundColor = "#500860";
+		});
+		e.target.style.backgroundColor = "#11085e";
+	});
+	document.querySelector("div#tabs").appendChild(tabEl);
+	tabEl.dispatchEvent(new Event("click"));
 });
