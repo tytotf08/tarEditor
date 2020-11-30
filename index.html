@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>TarEditor</title>
-    <link rel="stylesheet" href="./styles/monokai.css" />
-    <link rel="stylesheet" href="./styles/index.css" />
-  </head>
-  <body>
-    <main>
-      <div id="bigbar">
-        <div id="r">&#9654; Run</div>
-        <div id="tabs"></div>
-      </div>
-      <div id="wrap">
-        <div id="line-numbers"></div>
-        <div
-          id="editor"
-          class="language-javascript"
-          contenteditable="plaintext-only"
-          spellcheck="false"
-        ></div>
-      </div>
-      <div id="status-bar">
-        <div id="select-lang">
-          <label>
-            <select id="lang">
-              <optgroup label="Change language:">
-                <option>JavaScript</option>
-                <option>HTML</option>
-                <option>CSS</option>
-              </optgroup>
-            </select>
-          </label>
-        </div>
-        <div id="lines">Lines: 1</div>
-      </div>
-    </main>
-    <script src="./scripts/prism.js"></script>
-    <script src="./scripts/index.js"></script>
-  </body>
+	<head>
+		<title>TarEditor</title>
+		<link rel = "stylesheet" href = "./styles/monokai.css" />
+		<link rel = "stylesheet" href = "./styles/index.css" />
+	</head>
+	<body>
+		<main>
+			<div id = "bigbar">
+				<div id = "r">&#9654; Run</div>
+				<div id = "tabs"></div>
+			</div>
+			<div id = "wrap">
+				<div id = "line-numbers"></div>
+				<div
+					id = "editor"
+					class = "language-javascript"
+					contenteditable = "plaintext-only"
+					spellcheck = "false"
+				></div>
+			</div>
+			<div id = "status-bar">
+				<div id = "select-lang">
+					<label>
+						<select id = "lang">
+							<optgroup label = "Change language:">
+								<option>JavaScript</option>
+								<option>HTML</option>
+								<option>CSS</option>
+							</optgroup>
+						</select>
+					</label>
+				</div>
+				<div id = "lines">Lines: 1</div>
+			</div>
+		</main>
+		<script src = "./scripts/prism.js"></script>
+		<script src = "./scripts/index.js"></script>
+	</body>
 </html>
