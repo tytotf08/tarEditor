@@ -39,12 +39,7 @@ let incarnations = [{ html: "", pos: 0 }];
 let at = 0;
 let gutter;
 let newtabs;
-let editorScrollBottom =
-	this.scrollTop +
-	window.innerHeight -
-	window
-		.getComputedStyle(document.querySelector("div#status-bar"), null)
-		.height.replace(/[a-z]/g, "");
+let editorScrollBottom = this.scrollTop + window.innerHeight - window.getComputedStyle(document.querySelector("div#status-bar"), null).height.replace(/[a-z]/g, "");
 const autoComplete = [
 	{ open: "{", close: "}" },
 	{ open: '"', close: '"' },
@@ -69,19 +64,9 @@ const handleKey = function (e) {
 				if (text[text.length - 1] === "<!DOCTYPE html") {
 					insertText(">");
 				} else {
-					insertText(
-						"></" +
-							text[text.length - 1].replace("<", "").trim().split(" ")[0] +
-							">"
-					);
+					insertText("></" + text[text.length - 1].replace("<", "").trim().split(" ")[0] + ">");
 					pos = saveCaretPosition(editor);
-					restoreCaretPosition(
-						pos -
-							text[text.length - 1].split(" ")[0].replace("<", "").trim()
-								.length -
-							3,
-						editor
-					);
+					restoreCaretPosition(pos - text[text.length - 1].split(" ")[0].replace("<", "").trim().length - 3, editor);
 				}
 			}
 		}
@@ -94,16 +79,7 @@ const handleKey = function (e) {
 		tabs = getLeadingTabs(editor);
 		if (tabs.length > 0) {
 			e.preventDefault();
-			if (
-				currentLine.replace(/\s/g, "").endsWith("{") ||
-				currentLine.replace(/\s/g, "").endsWith("[") ||
-				(editor.getAttribute("class").includes("markup") &&
-					currentLine.split("<")[currentLine.split("<").length - 1].length >
-						1 &&
-					currentLine
-						.split("<")
-						[currentLine.split("<").length - 1].endsWith(">"))
-			) {
+			if (currentLine.replace(/\s/g, "").endsWith("{") || currentLine.replace(/\s/g, "").endsWith("[") || (editor.getAttribute("class").includes("markup") && currentLine.split("<")[currentLine.split("<").length - 1].length > 1 && currentLine.split("<")[currentLine.split("<").length - 1].endsWith(">"))) {
 				insertText("\n" + tabs + "\t\n" + tabs);
 				pos = saveCaretPosition(editor);
 				restoreCaretPosition(pos - (tabs.length + 1), editor);
@@ -111,16 +87,7 @@ const handleKey = function (e) {
 				insertText("\n" + tabs);
 			}
 		} else {
-			if (
-				currentLine.replace(/\s/g, "").endsWith("{") ||
-				currentLine.replace(/\s/g, "").endsWith("[") ||
-				(editor.getAttribute("class").includes("markup") &&
-					currentLine.split("<")[currentLine.split("<").length - 1].length >
-						1 &&
-					currentLine
-						.split("<")
-						[currentLine.split("<").length - 1].endsWith(">"))
-			) {
+			if (currentLine.replace(/\s/g, "").endsWith("{") || currentLine.replace(/\s/g, "").endsWith("[") || (editor.getAttribute("class").includes("markup") && currentLine.split("<")[currentLine.split("<").length - 1].length > 1 && currentLine.split("<")[currentLine.split("<").length - 1].endsWith(">"))) {
 				e.preventDefault();
 				insertText("\n\t\n\n");
 				pos = saveCaretPosition(editor);
@@ -317,15 +284,15 @@ const insertText = function (text) {
 		.replace(/'/g, "&#039;");
 	document.execCommand("insertHTML", false, text);
 };
-const saveCaretPosition = function (context) {
+const saveCaretPosition = function () {
 	range = window.getSelection().getRangeAt(0);
 	prefix = range.cloneRange();
-	prefix.selectNodeContents(context);
+	prefix.selectNodeContents(editor);
 	prefix.setEnd(range.endContainer, range.endOffset);
 	return prefix.toString().length;
 };
-const restoreCaretPosition = function (pos, context) {
-	for (node of context.childNodes) {
+const restoreCaretPosition = function(pos, editor) {
+	for (node of editor.childNodes) {
 		if (node.nodeType == Node.TEXT_NODE) {
 			if (node.length >= pos) {
 				range = document.createRange();
