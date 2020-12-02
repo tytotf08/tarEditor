@@ -2,6 +2,7 @@
 const line_numbers = document.querySelector("div#line-numbers");
 const run_btn = document.querySelector("span#run-tri");
 const cmd_bar = document.querySelector("span#cmds");
+const lang = document.querySelector("select#lang-chooser");
 let cmds = [""];
 let cmdnum = 0;
 run_btn.addEventListener("click", function(e) {
@@ -54,4 +55,16 @@ cmd_bar.addEventListener("focus", function(e) {
 	console.log("F");
 	document.execCommand("insertHTML", false, "&nbsp;");
 	document.execCommand("delete");
+});
+lang.addEventListener("change", function(e) {
+	console.log(this.value);
+	if (this.value.indexOf("HTML") > -1) {
+		isHTML();
+	} else if (this.value.indexOf("JavaScript") > -1) {
+		isJS();
+	} else if (this.value.indexOf("CSS") > -1) {
+		isCSS();
+	} else {
+		isMD();
+	}
 });

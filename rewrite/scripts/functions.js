@@ -64,3 +64,24 @@ const getLeadingTabs = function (context) {
 	newtabs = tabs;
 	return tabs;
 };
+const switchLanguage = function (lang) {
+	const pos = saveCaretPosition(input);
+	input.setAttribute("class", "language-" + lang);
+	restoreCaretPosition(pos, input);
+	window.setTimeout(function () {
+		input.focus();
+	}, 0);
+	Prism.highlightElement(input);
+};
+const isJS = function() {
+	switchLanguage("javascript");
+};
+const isHTML = function() {
+	switchLanguage("markup");
+};
+const isCSS = function() {
+	switchLanguage("css");
+};
+const isMD = function() {
+	switchLanguage("markdown");
+}

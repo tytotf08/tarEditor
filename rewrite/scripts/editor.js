@@ -95,12 +95,25 @@ input.addEventListener("keydown", function(e) {
 	for (let i = 0; i < autocomplete.length; i++) {
 		if (e.key === autocomplete[i].open) {
 			e.preventDefault();
-			document.execCommand("insertHTML", false, autocomplete[i].open + autocomplete[i].close);
-			const pos = saveCaretPosition();
-			if (e.key === '"' || e.key === "`" || e.key === "'") {
-				restoreCaretPosition(pos-2, input);
+			if ((afterCursor().startsWith('"') || afterCursor().startsWith("'") || afterCursor().startsWith("`")) && (e.key === '"' || e.key === "'" || e.key === "`" )) {
+				const pos = saveCaretPosition();
+				restoreCaretPosition(pos, input);
 			} else {
-				restoreCaretPosition(pos-1, input);
+				if (String(window.getSelection()) !== "") {
+					const beforeString = String(window.getSelection());
+					document.execCommand("delete");
+					document.execCommand("insertHTML", false, autocomplete[i].open+beforeString+autocomplete[i].close);
+					const pos = saveCaretPosition();
+					restoreCaretPosition(pos-1, input);
+				} else {
+					document.execCommand("insertHTML", false, autocomplete[i].open + autocomplete[i].close);
+					const pos = saveCaretPosition();
+					if (e.key === '"' || e.key === "`" || e.key === "'") {
+						restoreCaretPosition(pos-2, input);
+					} else {
+						restoreCaretPosition(pos-1, input);
+					}
+				}
 			}
 		}
 		if (e.key === "Backspace" && beforeCursor().endsWith(autocomplete[i].open) && afterCursor().startsWith(autocomplete[i].close)) {
@@ -111,17 +124,19 @@ input.addEventListener("keydown", function(e) {
 				document.execCommand("delete");
 			}
 		}
-		if (e.key === autocomplete[i].close && afterCursor().startsWith(autocomplete[i].close)) {
-			e.preventDefault();
-			const pos = saveCaretPosition();
-			restoreCaretPosition(pos+1, input);
+		if (e.key === autocomplete[i].close) {
+			if (afterCursor().startsWith(autocomplete[i].close)) {
+				e.preventDefault();
+				const pos = saveCaretPosition();
+				restoreCaretPosition(pos+1, input);
+			}
 		}
 	}
 	if (e.key === "Backspace") {
 		const splice = beforeCursor(input);
 		const endOfLine = splice.lastIndexOf("\n");
 		const currentLine = splice.substr(endOfLine + 1);
-		if (currentLine.length === 1) {
+		if (currentLine.length === 1 && afterCursor().split("\n")[0].length === 0) {
 			e.preventDefault();
 			const pos = saveCaretPosition();
 			document.execCommand("insertHTML", false, "&nbsp;");
@@ -172,7 +187,7 @@ input.addEventListener("keyup", function(e) {
 		}
 		at++;
 		incarnations[at] = { html, pos };
-	}, 150)
+	}, 150);
 	restoreCaretPosition(pos, input);
 });
 input.addEventListener("input", function(e) {
