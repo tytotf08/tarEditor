@@ -20,10 +20,38 @@ cmd_bar.addEventListener("keydown", function(e) {
 		e.preventDefault();
 		cmdnum++;
 		const cmd = cmd_bar.textContent;
+		for (let i = 0; i < cmd.length; i++) {
+			document.execCommand("delete");
+		}
 		cmds[cmdnum] = cmd;
 		if (cmd === "help") {
 			const helpWin = window.open("./windows/help.html", "_blank");
 			helpWin.document.body.focus();
 		}
+		cmd_bar.focus();
 	}
+	if (e.key === "ArrowUp") {
+		e.preventDefault();
+		cmd_bar.textContent = "";
+		document.execCommand("insertHTML", false, cmds[cmdnum]);
+		cmdnum--;
+		cmd_bar.focus();
+		document.execCommand("insertHTML", false, "&nbsp;");
+		document.execCommand("delete");
+	}
+	if (e.key === "ArrowDown") {
+		e.preventDefault();
+		cmd_bar.textContent = "";
+		console.log(cmds);
+		document.execCommand("insertHTML", false, cmds[cmdnum+1]);
+		cmdnum++;
+		cmd_bar.focus();
+		document.execCommand("insertHTML", false, "&nbsp;");
+		document.execCommand("delete");
+	}
+});
+cmd_bar.addEventListener("focus", function(e) {
+	console.log("F");
+	document.execCommand("insertHTML", false, "&nbsp;");
+	document.execCommand("delete");
 });

@@ -1,7 +1,13 @@
 "use strict";
-
+// I rewrote parts of the editor from memory, but otherwise from scratch.
 const input = document.querySelector("div#textarea");
 const wrap = document.querySelector("div#editor");
+// big changes: 
+// not everything is in the global scope. one of the issues was that there was
+// only a global scope in the editor, so it's rewritten to solve that.
+// also, seperate js files! if you add up the lines when this editor has tabs and 
+// I implement the lang choosing functionality, it'll probably be quite shorter than
+// the previous editor
 let prev = input.textContent;
 let last;
 const autocomplete = [
@@ -14,7 +20,7 @@ const autocomplete = [
 ];
 let incarnations = [
 	{html: "", pos: 0}
-]
+];
 let at = 0;
 input.setAttribute("contenteditable", "plaintext-only");
 input.setAttribute("spellcheck", false);

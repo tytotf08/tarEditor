@@ -94,7 +94,9 @@ div#status-bar {
 	font-family: Menlo, monospace;
 	font-size: 0.9rem;
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
 span#cmds {
@@ -103,6 +105,7 @@ span#cmds {
 	line-height: 2rem;
 	word-wrap: normal;
 	overflow: hidden;
+	cursor: text;
 }
 span#cmds:focus {
 	outline: none;
@@ -123,4 +126,18 @@ span#wrapper {
 }
 span#wrapper::-webkit-scrollbar {
 	display: none;
+}
+select#lang-chooser optgroup, select#lang-chooser option, select#lang-chooser {
+	background-color: #9e9e9e;
+	border: none;
+	flex: 10%;
+}
+select#lang-chooser:focus {
+	outline: none;
+}
+select#lang-chooser:hover {
+	background-color: #8e8e8e;
+}
+select#lang-chooser {
+	-webkit-appearance: none;
 }

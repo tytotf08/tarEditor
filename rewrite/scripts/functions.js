@@ -48,16 +48,13 @@ const afterCursor = function () {
 const hasLeadingTabs = function (context) {
 	const splice = beforeCursor(context);
 	const endOfLine = splice.lastIndexOf("\n");
-
 	const currentLine = splice.substr(endOfLine + 1);
 	return currentLine.charAt(0) === "\t";
 };
 const getLeadingTabs = function (context) {
 	const splice = beforeCursor(context);
 	const endOfLine = splice.lastIndexOf("\n");
-
 	const currentLine = splice.substr(endOfLine + 1);
-
 	let tabs = "";
 	let newtabs = "";
 	let index = 0;
