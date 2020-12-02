@@ -28,6 +28,8 @@ cmd_bar.addEventListener("keydown", function(e) {
 		if (cmd === "help") {
 			const helpWin = window.open("./windows/help.html", "_blank");
 			helpWin.document.body.focus();
+		} else if (cmd === "run") {
+			run_btn.dispatchEvent(new Event("click"));
 		}
 		cmd_bar.focus();
 	}

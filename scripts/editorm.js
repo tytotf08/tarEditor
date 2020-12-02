@@ -82,7 +82,7 @@
 		return tabs; // get padding
 	};
 	return {
-		init : function(el, opts) {
+		initEditor : function(el, opts) {
 			if (!el) return false; // return false if the el isn't specified
 			let wrap = el; // it's a wrapper
 			if (typeof opts !== "object") {
@@ -184,6 +184,24 @@
 					opts = newopts;
 				}
 			};
+		},
+		info : function() {
+			return this.self + " Version " + this.version + " running on an environment with self value: " + this.global() + ".";
+		},
+		version: "1.0.0",
+		self: "Tar",
+		global: function() {
+			if (typeof module !== "undefined" && typeof exports === "object") {
+				return "module.exports";
+			} else if (typeof window !== "undefined") {
+				return "window";
+			} else if (typeof global !== "undefined") {
+				return "global";
+			} else if (typeof self !== "undefined") {
+				return "self";
+			} else {
+				return "this";
+			}
 		}
 	}
 });

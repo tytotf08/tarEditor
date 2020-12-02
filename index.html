@@ -1,41 +1,32 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>TarEditor</title>
-		<link rel = "stylesheet" href = "./styles/monokai.css" />
-		<link rel = "stylesheet" href = "./styles/index.css" />
-	</head>
-	<body>
-		<main>
-			<div id = "bigbar">
-				<div id = "r">&#9654; Run</div>
-				<div id = "tabs"></div>
-			</div>
-			<div id = "wrap">
-				<div id = "line-numbers"></div>
-				<div
-					id = "editor"
-					class = "language-javascript"
-					contenteditable = "plaintext-only"
-					spellcheck = "false"
-				></div>
-			</div>
-			<div id = "status-bar">
-				<div id = "select-lang">
-					<label>
-						<select id = "lang">
-							<optgroup label = "Change language:">
-								<option>JavaScript</option>
-								<option>HTML</option>
-								<option>CSS</option>
-							</optgroup>
-						</select>
-					</label>
-				</div>
-				<div id = "lines">Lines: 1</div>
-			</div>
-		</main>
-		<script src = "./scripts/prism.js"></script>
-		<script src = "./scripts/index.js"></script>
-	</body>
+<head>
+	<title>TarEditor</title>
+	<link rel = "stylesheet" href = "./styles/index.css"/>
+	<link rel = "stylesheet" href = "./styles/themes/monokai.css"/>
+</head>
+<body>
+	<main>
+		<div id = "components-bar"><span id = "run-tri">&#9654; Run</span><span id = "wrapper"><span contenteditable = "plaintext-only" id = "cmds"></span></span></div>
+		<div id = "editor">
+			<div id = "line-numbers">1</div>
+			<div id = "textarea" class = "language-markdown"></div>
+		</div>
+		<div id = "status-bar">
+			<select id = "lang-chooser">
+				<optgroup label = "Choose Language:">
+					<option>Markdown (MD 1.0.1)</option>
+					<option>JavaScript (ECMAScript 9)</option>
+					<option>HTML (HTML5)</option>
+					<option>CSS (CSS3)</option>
+				</optgroup>
+			</select>
+		</div>
+	</main>
+	<script src = "./scripts/Prism.js"></script>
+	<script src = "./scripts/functions.js"></script>
+	<script src = "./scripts/tabs.js"></script>
+	<script src = "./scripts/components.js"></script>
+	<script src = "./scripts/editor.js"></script>
+</body>
 </html>
