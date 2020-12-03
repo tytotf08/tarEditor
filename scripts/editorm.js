@@ -241,6 +241,12 @@
 					editor.innerHTML = incarnations[at].html;
 					restoreCaretPosition(incarnations[at].pos, editor);
 				}
+				if (e.key === "Backspace" && beforeCursor(editor).endsWith(opts.tab)) {
+					e.preventDefault();
+					for (let i = 0; i < opts.tab.length; i++) {
+						document.execCommand("delete");
+					}
+				}
 			});
 			editor.addEventListener("keyup", function(e) {
 				if (e.isComposing) return;
@@ -250,7 +256,6 @@
 				window.setTimeout(function() {
 					if (prev === editor.textContent) return;
 					const html = editor.innerHTML;
-					console.log(html);
 					const pos = saveCaretPosition(editor);
 					last = incarnations[at];
 					if (last) {
@@ -277,6 +282,17 @@
 					return editor || undefined;
 				},
 				setOpt: function(newopts) {
+					if (!newopts.tab) {
+						newopts.tab = "\t";
+					}
+					if (!newopts.line_numbers) {
+						newopts.line_numbers = false;
+					}
+					if (!newopts.highlight) {
+						newopts.highlight = function() {
+							editor.innerHTML = editor.textContent.replace(/</g, "&lt;");
+						}
+					}
 					opts = newopts;
 				}
 			};

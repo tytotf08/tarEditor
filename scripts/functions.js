@@ -1,4 +1,6 @@
 "use strict";
+let tab_show = "->";
+
 const saveCaretPosition = function() {
 	const range = window.getSelection().getRangeAt(0);
 	let prefix = range.cloneRange();
@@ -49,7 +51,7 @@ const hasLeadingTabs = function (context) {
 	const splice = beforeCursor(context);
 	const endOfLine = splice.lastIndexOf("\n");
 	const currentLine = splice.substr(endOfLine + 1);
-	return currentLine.charAt(0) === "\t";
+	return currentLine.charAt(0) === tab_show;
 };
 const getLeadingTabs = function (context) {
 	const splice = beforeCursor(context);
@@ -58,8 +60,8 @@ const getLeadingTabs = function (context) {
 	let tabs = "";
 	let newtabs = "";
 	let index = 0;
-	while (currentLine.charAt(index++) === "\t") {
-		tabs += "\t";
+	while (currentLine.charAt(index++) === tab_show) {
+		tabs += tab_show;
 	}
 	newtabs = tabs;
 	return tabs;
