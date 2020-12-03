@@ -22,7 +22,7 @@ main {
 div#editor {
 	display: flex;
 	align-items: flex-start;
-	overflow: auto;
+	overflow: scroll;
 	width: 100%;
 	height: 91%;
 	padding: 0px;
@@ -43,6 +43,7 @@ div#textarea {
 	padding-top: 1rem;
 	tab-size: 2;
 	word-wrap: normal;
+	overflow-x: scroll;
 }
 div#textarea:focus {
 	outline: none;

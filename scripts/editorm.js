@@ -13,13 +13,21 @@
 	}
 })(function() {
 	"use strict";
+	const autocomplete = [
+		{ open: "{", close: "}" },
+		{ open: '"', close: '"' },
+		{ open: "'", close: "'" },
+		{ open: "`", close: "`" },
+		{ open: "[", close: "]" },
+		{ open: "(", close: ")" }
+	];
 	const saveCaretPosition = function(editor) {
 		const range = window.getSelection().getRangeAt(0);
 		let prefix = range.cloneRange();
 		prefix.selectNodeContents(editor);
 		prefix.setEnd(range.endContainer, range.endOffset);
 		return prefix.toString().length; // beforecursor.length kind of.
-	}
+	};
 	const restoreCaretPosition = function(pos, context) {
 		for (const node of context.childNodes) { // check nodes
 			if (node.nodeType == Node.TEXT_NODE) {
@@ -42,7 +50,7 @@
 			}
 		}
 		return pos;
-	}
+	};
 	const beforeCursor = function(editor) {
 		const s = window.getSelection();
 		const r0 = s.getRangeAt(0);
@@ -69,9 +77,7 @@
 	const getLeadingTabs = function (context) {
 		const splice = beforeCursor(context);
 		const endOfLine = splice.lastIndexOf("\n");
-
 		const currentLine = splice.substr(endOfLine + 1);
-
 		let tabs = "";
 		let newtabs = "";
 		let index = 0;
@@ -85,6 +91,12 @@
 		initEditor : function(el, opts) {
 			if (!el) return false; // return false if the el isn't specified
 			let wrap = el; // it's a wrapper
+			let last;
+			let incarnations = [
+				{html: "", pos: 0}
+			];
+			let at = 0;
+			let prev = "";
 			if (typeof opts !== "object") {
 				opts = {tab:"\t", line_numbers: false}
 			}
@@ -96,7 +108,7 @@
 			}
 			if (!opts.highlight) {
 				opts.highlight = function() {
-					editor.innerHTML = editor.textContent;
+					editor.innerHTML = editor.textContent.replace(/</g, "&lt;");
 				}
 			}
 			let editor = document.createElement("DIV"); // editor field
@@ -169,6 +181,90 @@
 						}
 					}
 				}
+				for (let i = 0; i < autocomplete.length; i++) {
+					if (e.key === autocomplete[i].open) {
+						e.preventDefault();
+						if ((afterCursor(editor).startsWith('"') || afterCursor(editor).startsWith("'") || afterCursor(editor).startsWith("`")) && (e.key === '"' || e.key === "'" || e.key === "`" )) {
+							const pos = saveCaretPosition(editor);
+							restoreCaretPosition(pos, editor);
+						} else {
+							if (String(window.getSelection()) !== "") {
+								const beforeString = String(window.getSelection());
+								document.execCommand("delete");
+								document.execCommand("insertHTML", false, autocomplete[i].open+beforeString+autocomplete[i].close);
+								const pos = saveCaretPosition(editor);
+								restoreCaretPosition(pos-1, editor);
+							} else {
+								document.execCommand("insertHTML", false, autocomplete[i].open + autocomplete[i].close);
+								const pos = saveCaretPosition(editor);
+								if (e.key === '"' || e.key === "`" || e.key === "'") {
+									restoreCaretPosition(pos-2, editor);
+								} else {
+									restoreCaretPosition(pos-1, editor);
+								}
+							}
+						}
+					}
+					if (e.key === "Backspace" && beforeCursor(editor).endsWith(autocomplete[i].open) && afterCursor(editor).startsWith(autocomplete[i].close)) {
+						e.preventDefault();
+						const pos = saveCaretPosition(editor);
+						restoreCaretPosition(pos+1, editor);
+						for (let i = 0; i < 2; i++) {
+							document.execCommand("delete");
+						}
+					}
+					if (e.key === autocomplete[i].close) {
+						if (afterCursor(editor).startsWith(autocomplete[i].close)) {
+							e.preventDefault();
+							const pos = saveCaretPosition(editor);
+							restoreCaretPosition(pos+1, editor);
+						}
+					}
+				}
+				if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
+					e.preventDefault();
+					at--;
+					if (at < 0) {
+						at = 0;
+						return;
+					}
+					editor.innerHTML = incarnations[at].html;
+					restoreCaretPosition(incarnations[at].pos, editor);
+				}
+				if (((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "z") || ((e.ctrlKey || e.metaKey) && e.key === "y")) {
+					e.preventDefault();
+					at++;
+					if (at > incarnations.length-1) {
+						at = incarnations.length-1;
+						return;
+					}
+					editor.innerHTML = incarnations[at].html;
+					restoreCaretPosition(incarnations[at].pos, editor);
+				}
+			});
+			editor.addEventListener("keyup", function(e) {
+				if (e.isComposing) return;
+				if (String(window.getSelection()) !== "") return;
+				const pos = saveCaretPosition(editor);
+				opts.highlight();
+				window.setTimeout(function() {
+					if (prev === editor.textContent) return;
+					const html = editor.innerHTML;
+					console.log(html);
+					const pos = saveCaretPosition(editor);
+					last = incarnations[at];
+					if (last) {
+						if (last.html === html && last.pos === last.pos) {
+							return;
+						}
+					}
+					at++;
+					incarnations[at] = { html, pos };
+				}, 150);
+				restoreCaretPosition(pos, editor);
+			});
+			editor.addEventListener("editor", function(e) {
+				prev = editor.textContent;
 			});
 			wrap.overflow = "scroll";
 			wrap.appendChild(editor);
