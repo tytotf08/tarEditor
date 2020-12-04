@@ -1,6 +1,9 @@
 "use strict";
-let tab_show = "->";
-
+const returnNewWin = function() {
+	const run_win = window.open(" ", "_blank");
+	run_win.document.write(input.textContent || "");
+	return true;
+}
 const saveCaretPosition = function() {
 	const range = window.getSelection().getRangeAt(0);
 	let prefix = range.cloneRange();
@@ -18,6 +21,7 @@ const restoreCaretPosition = function(pos, context) {
 				range.collapse(true);
 				sel.removeAllRanges();
 				sel.addRange(range);
+
 				return -1;
 			} else {
 				pos = pos - node.length;
@@ -51,7 +55,7 @@ const hasLeadingTabs = function (context) {
 	const splice = beforeCursor(context);
 	const endOfLine = splice.lastIndexOf("\n");
 	const currentLine = splice.substr(endOfLine + 1);
-	return currentLine.charAt(0) === tab_show;
+	return currentLine.charAt(0) === "\t";
 };
 const getLeadingTabs = function (context) {
 	const splice = beforeCursor(context);
@@ -60,20 +64,18 @@ const getLeadingTabs = function (context) {
 	let tabs = "";
 	let newtabs = "";
 	let index = 0;
-	while (currentLine.charAt(index++) === tab_show) {
-		tabs += tab_show;
+	while (currentLine.charAt(index++) === "\t") {
+		tabs += "\t";
 	}
 	newtabs = tabs;
 	return tabs;
 };
 const switchLanguage = function (lang) {
-	const pos = saveCaretPosition(input);
 	input.setAttribute("class", "language-" + lang);
-	restoreCaretPosition(pos, input);
-	window.setTimeout(function () {
+	Prism.highlightElement(input);
+	window.setTimeout(function() {
 		input.focus();
 	}, 0);
-	Prism.highlightElement(input);
 };
 const isJS = function() {
 	switchLanguage("javascript");

@@ -1,14 +1,12 @@
 "use strict";
 const line_numbers = document.querySelector("div#line-numbers");
-const run_btn = document.querySelector("span#run-tri");
+const run_btn = document.querySelector("a#run-tri");
 const cmd_bar = document.querySelector("span#cmds");
 const lang = document.querySelector("select#lang-chooser");
+const lang_cover = document.querySelector("span.cover");
 let cmds = [""];
 let cmdnum = 0;
-run_btn.addEventListener("click", function(e) {
-	const run_win = window.open(" ", "_blank");
-	run_win.document.write(input.textContent || "");
-});
+lang_cover.innerHTML = lang.value + " &#x25BC;";
 window.onkeydown = function(e) {
 	if ((e.metaKey || e.ctrlKey) && e.key === "r") {
 		e.preventDefault();
@@ -69,4 +67,5 @@ lang.addEventListener("change", function(e) {
 	} else {
 		isMD();
 	}
+	lang_cover.innerHTML = this.value + " &#x25BC;";
 });
