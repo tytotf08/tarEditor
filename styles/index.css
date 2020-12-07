@@ -15,7 +15,10 @@ div#components-bar, div#status-bar {
 	align-items: center;
 	background: #9e9e9e;
 } 
-div#components-bar a {
+div#components-bar {
+	height: 3rem;
+}
+div#components-bar a#run-tri, a#new-tab {
 	color: black;
 	font-family: Menlo, monospace;
 	text-decoration: none;
@@ -27,7 +30,11 @@ div#components-bar a {
 	border-radius: 0.5rem;
 	cursor: pointer;
 }
-div#components-bar a:hover {
+div#tabs {
+	display: flex;
+	flex-direction: row;
+}
+div#components-bar a#run-tri:hover, a#new-tab:hover {
 	background-color: #7e7e7e;
 }
 div#editor {
@@ -58,12 +65,55 @@ div#line-numbers, div#textarea {
 	white-space: pre;
 	font-family: Menlo, monospace;
 	font-size: 1.125rem;
-	line-height: 1.5rem;
+	line-height: 1.75rem;
 	-webkit-font-smoothing: antialiased;
 	caret-color: white;
 	color: white;
 }
+div#tabs {
+	display: flex;
+	flex-direction: row;
+	width: 90%;
+	overflow-x: scroll;
+	border-left: solid 1px;
+
+}
+div#tabs::-webkit-scrollbar {
+	display: none;
+}
+div.tab {
+	flex: 15%;
+	min-width: 15%;
+	max-width: 15%;
+	overflow: hidden;
+	border-right: solid 1px;
+	text-align: center;
+	font-family: Menlo, monospace;
+	font-size: 0.75rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	position: relative;
+	user-select: none;
+	-webkit-user-select: none;
+	cursor: default;
+}
+a.closer {
+	position: absolute;
+	right: 1rem;
+	font-weight: bolder;
+	font-size: 0.8rem;
+	user-select: none;
+	-webkit-user-select: none;
+	text-align: center;
+	margin: auto;
+}
+a.closer:hover{
+	color: white;
+	cursor: pointer;
+}
 div#status-bar {
+	flex-direction: column !important;
 	justify-content: center;
 }
 div#lang-wrapper {
@@ -74,14 +124,18 @@ div#lang-wrapper {
 	align-items: center; 
 	cursor: pointer;
 	-webkit-user-select: none;
+	line-height: 2em;
+}
+a#new-tab {
+	flex: 5%;
+	max-width: 5%;
 }
 select#lang-chooser optgroup, select#lang-chooser option, select#lang-chooser {
 	background-color: #9e9e9e;
 	border: none;
-	flex: 10%;
 	font-size: 0.75rem;
 	color: transparent;
-	padding: 0.75rem;
+	padding: 2%;
 }
 select#lang-chooser:focus {
 	outline: none;

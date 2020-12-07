@@ -1,0 +1,31 @@
+a.token {
+  text-decoration: none;
+}
+.token.selector,
+.token.punctuation,
+.token.keyword {
+  color: PaleVioletRed;
+}
+.token.property,
+.token.number,
+.token.string,
+.token.punctuation,
+.token.tag-id {
+  color: DodgerBlue;
+}
+.token.function,
+.token.attr-name {
+  color: CadetBlue;
+}
+.token.atrule .atrule-id {
+  color: BlueViolet;
+}
+.token.boolean {
+  color: LightSlateGray;
+}
+.token.comment {
+  color: DarkGrey;
+}
+.language-php .variable {
+  color: CadetBlue;
+}

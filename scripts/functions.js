@@ -1,4 +1,7 @@
 "use strict";
+const newTab = function() {
+	new doc();
+}
 const returnNewWin = function() {
 	const run_win = window.open(" ", "_blank");
 	run_win.document.write(input.textContent || "");
@@ -14,6 +17,7 @@ const saveCaretPosition = function() {
 const restoreCaretPosition = function(pos, context) {
 	for (const node of context.childNodes) {
 		if (node.nodeType == Node.TEXT_NODE) {
+			console.log(Node.TEXT_NODE);
 			if (node.length >= pos) {
 				let range = document.createRange();
 				let sel = window.getSelection();

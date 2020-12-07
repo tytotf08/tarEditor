@@ -43,7 +43,6 @@ cmd_bar.addEventListener("keydown", function(e) {
 	if (e.key === "ArrowDown") {
 		e.preventDefault();
 		cmd_bar.textContent = "";
-		console.log(cmds);
 		document.execCommand("insertHTML", false, cmds[cmdnum+1]);
 		cmdnum++;
 		cmd_bar.focus();
@@ -52,12 +51,10 @@ cmd_bar.addEventListener("keydown", function(e) {
 	}
 });
 cmd_bar.addEventListener("focus", function(e) {
-	console.log("F");
 	document.execCommand("insertHTML", false, "&nbsp;");
 	document.execCommand("delete");
 });
 lang.addEventListener("change", function(e) {
-	console.log(this.value);
 	if (this.value.indexOf("HTML") > -1) {
 		isHTML();
 	} else if (this.value.indexOf("JavaScript") > -1) {
