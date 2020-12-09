@@ -17,9 +17,14 @@
 		let upcb = (e) => {};
 		let focused = true;
 		let at = 0;
+		let last;
 		let incarnations = [
 			{html: "", pos: 0}
 		];
+		let info = {
+			beforeCursor: "",
+			afterCursor: ""
+		};
 		const saveCaretPosition = () => {
 			const range = window.getSelection().getRangeAt(0);
 			let prefix = range.cloneRange();
@@ -50,7 +55,6 @@
 			}
 			return pos;
 		}
-		let last;
 		const beforeCursor = () => {
 			const s = window.getSelection();
 			const r0 = s.getRangeAt(0);
@@ -102,7 +106,7 @@
 		let editor = document.createElement("DIV");
 		editor.style.whiteSpace = "pre";
 		editor.style.flex = "97%";
-		editor.classList.add("language-javascript");
+		editor.classList.add("language-markdown");
 		editor.classList.add("textarea");
 		editor.setAttribute("spellcheck", false);
 		if (String(window.navigator).toLowerCase().indexOf("firefox") > -1) {
@@ -112,6 +116,7 @@
 		}
 		editor.addEventListener("focus", (e) => {
 			focused = true;
+			editor.style.outline = "none";
 		});
 		editor.addEventListener("blur", (e) => {
 			focused = false;
@@ -289,6 +294,24 @@
 					line_numbers.innerHTML += String(i+1) + "\n";
 				}
 			}
+			if (e.key === ">" && editor.getAttribute("class").includes("markup")) {
+				let text = beforeCursor(editor).split(">");
+				if (text[text.length - 1] !== "") {
+					if (text[text.length - 1].trim().startsWith("<")) {
+						e.preventDefault();
+						if (text[text.length - 1] === "<!DOCTYPE html") {
+							document.execCommand("insertHTML", false, "<");
+						} else {
+							text = text[text.length-1].split("<");
+							text = text[text.length-1].split(" ");
+							const insertText = String("&gt;&lt;/" + text[0] + "&gt;");
+							document.execCommand("insertHTML", false, insertText);
+							const pos = saveCaretPosition(editor);
+							restoreCaretPosition(pos-(3+text[0].length), editor);
+						}
+					}
+				}
+			}
 			downcb(e);
 		});
 		editor.addEventListener("keyup", (e) => {
@@ -298,7 +321,7 @@
 			editor.innerHTML = editor.textContent
 				.replace(/</g, "&lt;")
 				.replace(/>/g, "&gt;");
-			Prism.highlightElement(editor);
+			hl(editor);
 			window.setTimeout(() => {
 				const html = editor.innerHTML;
 				const pos = saveCaretPosition(editor);
@@ -311,7 +334,15 @@
 				at++;
 				incarnations[at] = { html, pos };
 			}, 150);
+			info.beforeCursor = beforeCursor(editor);
+			info.afterCursor = afterCursor(editor);
 			restoreCaretPosition(pos, editor);
+		});
+		editor.addEventListener("mousedown", (e) => {
+			try {
+				info.beforeCursor = beforeCursor(editor);
+				info.afterCursor = afterCursor(editor);
+			} catch (IndexSizeError) {}		
 		});
 		return {
 			textarea: editor,
@@ -342,6 +373,9 @@
 				} else {
 					return false;
 				}
+			},
+			info: () => {
+				return info;
 			}
 		};
 	};
@@ -353,10 +387,12 @@
 	tarIDE.init = (wrap, ln = true, hl = (editor) => {editor.innerHTML = editor.innerHTML;}) => {
 		const tabBar = document.createElement("DIV");
 		tabBar.classList.add("tar-bar");
+		tabBar.style.display = "flex";
+		tabBar.style.height = "5%";
 		const wrapper = document.createElement("DIV");
-		wrap.style.height = "92%";
 		wrap.appendChild(tabBar);
 		wrap.appendChild(wrapper);
+		wrap.classList.add("taride-wrapper")
 		const editor = tar(wrapper, ln, hl);
 		wrapper.style.height = "95%";
 		return editor;

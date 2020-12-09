@@ -21,6 +21,9 @@ body {
 	height: 92%;
 	overflow: scroll;
 }
+.taride-wrapper {
+	height: 92%;
+}
 div.textarea {
 	flex: 97%;
 	tab-size: 2;
