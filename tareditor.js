@@ -294,7 +294,7 @@
 					line_numbers.innerHTML += String(i+1) + "\n";
 				}
 			}
-			if (e.key === ">" && editor.getAttribute("class").includes("markup")) {
+			if (e.key === ">" && editor.getAttribute("class").includes("mark")) {
 				let text = beforeCursor(editor).split(">");
 				if (text[text.length - 1] !== "") {
 					if (text[text.length - 1].trim().startsWith("<")) {
@@ -384,14 +384,41 @@
 () => {
 	"use strict";
 	let tarIDE = {};
+	let mainTab;
+	class tab {
+		constructor(wrap)	{
+			this.tabEl = document.createElement("DIV");
+			this.tabEl.innerHTML = "untitled";
+			this.tabEl.classList.add("taride-tab");
+			this.tabEl.style.display = "flex";
+			this.tabEl.style.flexDirection = "column";
+			this.tabEl.style.justifyContent = "center";
+			this.tabEl.style.alignItems = "center";
+			this.wrap = wrap;
+			this.wrap.appendChild(this.tabEl);
+			mainTab = this;
+			this.document = {
+				html : "",
+				pos: 0
+			}
+		}
+		refresh(doc) {
+			this.document = doc;
+		}
+	}
 	tarIDE.init = (wrap, ln = true, hl = (editor) => {editor.innerHTML = editor.innerHTML;}) => {
 		const tabBar = document.createElement("DIV");
-		tabBar.classList.add("tar-bar");
+		tabBar.classList.add("taride-bar");
 		tabBar.style.display = "flex";
 		tabBar.style.height = "5%";
+		new tab(tabBar);
 		const wrapper = document.createElement("DIV");
 		wrap.appendChild(tabBar);
 		wrap.appendChild(wrapper);
+		wrap.addEventListener("keyup", (e) => {
+			mainTab.refresh(editor.document());
+			console.log(mainTab);
+		});
 		wrap.classList.add("taride-wrapper")
 		const editor = tar(wrapper, ln, hl);
 		wrapper.style.height = "95%";

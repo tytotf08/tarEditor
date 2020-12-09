@@ -7,7 +7,7 @@ body {
 	margin: 0px;
 	background-color: #272822;
 }
-.tar-bar {
+.taride-bar {
 	display: flex;
 	flex-direction: row;
 	height: 5%;
@@ -23,6 +23,11 @@ body {
 }
 .taride-wrapper {
 	height: 92%;
+}
+.taride-tab {
+	font-family: Menlo, monospace;
+	font-size: 0.75em;
+	padding-left: 1rem;
 }
 div.textarea {
 	flex: 97%;
@@ -73,6 +78,7 @@ div#status-bar div select#lang, optgroup {
 	-webkit-appearance: none;
 	cursor: pointer;
 	text-align: center;
+	-webkit-user-select: none;
 }
 div#status-bar div select#lang:focus {
 	outline: none;
