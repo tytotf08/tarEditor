@@ -1,5 +1,6 @@
-;!((lib = () => {}) => {
+;!((lib = () => {}, ide = () => {}) => {
 	window.tar = lib();
+	window.tarIDE = ide();
 })(() => {
 	"use strict";
 	const autocomplete = [
@@ -345,8 +346,24 @@
 		};
 	};
 	return tar;
+},
+() => {
+	"use strict";
+	let tarIDE = {};
+	tarIDE.init = (wrap, ln = true, hl = (editor) => {editor.innerHTML = editor.innerHTML;}) => {
+		const tabBar = document.createElement("DIV");
+		tabBar.classList.add("tar-bar");
+		const wrapper = document.createElement("DIV");
+		wrap.style.height = "92%";
+		wrap.appendChild(tabBar);
+		wrap.appendChild(wrapper);
+		const editor = tar(wrapper, ln, hl);
+		wrapper.style.height = "95%";
+		return editor;
+	}
+	return tarIDE;
 });
-const editor = tar(document.querySelector("main"), true, Prism.highlightElement);
+const editor = tarIDE.init(document.querySelector("main"), true, Prism.highlightElement);
 window.addEventListener("load", (e) => {
 	editor.textarea.focus();
 });

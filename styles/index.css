@@ -7,6 +7,14 @@ body {
 	margin: 0px;
 	background-color: #272822;
 }
+.tar-bar {
+	display: flex;
+	flex-direction: row;
+	height: 5%;
+	background-color: #eeeeee;
+	padding: 0px;
+	margin: 0px;
+}
 .tar-wrap {
 	display: flex;
 	flex-direction: row;
@@ -16,14 +24,14 @@ body {
 div.textarea {
 	flex: 97%;
 	tab-size: 2;
-	padding-top: 1rem;
+	padding-top: 0.75em;
 }
 div.textarea:focus{
 	outline: none;
 }
 div.line_numbers {
 	flex: 3%;
-	padding-top: 1rem;
+	padding-top: 0.75em;
 	text-align: center;
 	user-select: none;
 	-webkit-user-select: none;
@@ -35,8 +43,8 @@ div.line_numbers {
 div.line_numbers, div.textarea {
 	white-space: pre;
 	font-family: Menlo, monospace;
-	font-size: 1.125rem;
-	line-height: 1.5rem;
+	font-size: 1.125em;
+	line-height: 1.5em;
 	-webkit-font-smoothing: antialiased;
 	caret-color: white;
 	color: white;
@@ -69,7 +77,7 @@ div#status-bar div select#lang:focus {
 div#status-bar div div#cover {
 	pointer-events: none;
 	position: absolute;
-	font-size: 0.8rem;
+	font-size: 0.8em;
 	text-align: center;
 	font-family: Menlo, monospace;
 	cursor: pointer;
