@@ -147,6 +147,9 @@
 		}
 		wrap.appendChild(editor);
 		editor.addEventListener("input", (e) => {
+			const pos = saveCaretPosition(editor);
+			hl(editor);
+			restoreCaretPosition(pos, editor);
 			inputE();
 		});
 		editor.addEventListener("keydown", (e) => {
@@ -297,7 +300,7 @@
 			if (e.key === ">" && editor.getAttribute("class").includes("mark")) {
 				let text = beforeCursor(editor).split(">");
 				if (text[text.length - 1] !== "") {
-					if (text[text.length - 1].trim().startsWith("<")) {
+					if (text[text.length - 1].trim().startsWith("<") && !text[text.length - 1].includes("/")) {
 						e.preventDefault();
 						if (text[text.length - 1] === "<!DOCTYPE html") {
 							document.execCommand("insertHTML", false, "<");
@@ -317,11 +320,8 @@
 		editor.addEventListener("keyup", (e) => {
 			if (e.isComposing) return;
 			if (String(window.getSelection()) !== "") return;
-			const pos = saveCaretPosition(editor);
-			editor.innerHTML = editor.textContent
-				.replace(/</g, "&lt;")
-				.replace(/>/g, "&gt;");
-			hl(editor);
+			info.beforeCursor = beforeCursor(editor);
+			info.afterCursor = afterCursor(editor);
 			window.setTimeout(() => {
 				const html = editor.innerHTML;
 				const pos = saveCaretPosition(editor);
@@ -334,9 +334,6 @@
 				at++;
 				incarnations[at] = { html, pos };
 			}, 150);
-			info.beforeCursor = beforeCursor(editor);
-			info.afterCursor = afterCursor(editor);
-			restoreCaretPosition(pos, editor);
 		});
 		editor.addEventListener("mousedown", (e) => {
 			try {
@@ -416,8 +413,16 @@
 		wrap.appendChild(tabBar);
 		wrap.appendChild(wrapper);
 		wrap.addEventListener("keyup", (e) => {
-			mainTab.refresh(editor.document());
-			console.log(mainTab);
+			try {
+				mainTab.refresh(editor.document());
+				console.log(mainTab);
+			} catch(err) {};
+		});
+		wrap.addEventListener("click", (e) => {
+			try {
+				mainTab.refresh(editor.document());
+				console.log(mainTab);
+			} catch(err) {};
 		});
 		wrap.classList.add("taride-wrapper")
 		const editor = tar(wrapper, ln, hl);
