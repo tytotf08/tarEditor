@@ -4,12 +4,12 @@
 })(() => {
 	"use strict";
 	const autocomplete = [
-		{ open: "{", close: "}" },
-		{ open: '"', close: '"' },
-		{ open: "'", close: "'" },
-		{ open: "`", close: "`" },
-		{ open: "[", close: "]" },
-		{ open: "(", close: ")" }
+		{open: "{", close: "}"},
+		{open: '"', close: '"'},
+		{open: "'", close: "'"},
+		{open: "`", close: "`"},
+		{open: "[", close: "]"},
+		{open: "(", close: ")"}
 	];
 	const tar = (wrap, ln = true, hl = (editor) => {editor.innerHTML = editor.innerHTML;}) => {
 		if (!wrap) return;
@@ -18,9 +18,10 @@
 		let focused = true;
 		let at = 0;
 		let last;
-		let incarnations = [
-			{html: "", pos: 0}
-		];
+		let incarnations = [{
+			html: "",
+			pos: 0
+		}];
 		let info = {
 			beforeCursor: "",
 			afterCursor: ""
@@ -96,7 +97,7 @@
 		if (wrap) {
 			try {
 				wrap.getAttribute("class");
-			} catch(e) {
+			} catch (e) {
 				throw new Error("No such HTMLElement: " + wrap.toString());
 			}
 		}
@@ -134,7 +135,7 @@
 			const lines = editor.textContent.split(/\n(?!$)/g).length;
 			line_numbers.innerHTML = "1\n";
 			for (let i = 1; i < lines; i++) {
-				line_numbers.innerHTML += String(i+1) + "\n";
+				line_numbers.innerHTML += String(i + 1) + "\n";
 			}
 		};
 		if (ln === true) {
@@ -147,9 +148,6 @@
 		}
 		wrap.appendChild(editor);
 		editor.addEventListener("input", (e) => {
-			const pos = saveCaretPosition(editor);
-			hl(editor);
-			restoreCaretPosition(pos, editor);
 			inputE();
 		});
 		editor.addEventListener("keydown", (e) => {
@@ -161,9 +159,9 @@
 						const endOfLine = splice.lastIndexOf("\n");
 						const currentLine = splice.substr(endOfLine + 1);
 						const pos = saveCaretPosition(editor);
-						restoreCaretPosition(pos-currentLine.length+1, editor);
+						restoreCaretPosition(pos - currentLine.length + 1, editor);
 						document.execCommand("delete");
-						restoreCaretPosition(pos-1, editor);
+						restoreCaretPosition(pos - 1, editor);
 					}
 				} else {
 					if (String(window.getSelection()).length > 0) {
@@ -173,16 +171,16 @@
 							const splitBeforeText = beforeText.split("\n");
 							for (let i = 0; i < splitBeforeText.length; i++) {
 								splitBeforeText[i] = "\t" + splitBeforeText[i] + "\n";
-								document.execCommand("insertHTML", false, splitBeforeText[i]+"\n");
+								document.execCommand("insertHTML", false, splitBeforeText[i] + "\n");
 							}
 							document.execCommand("delete");
 							const pos = saveCaretPosition(editor);
-							restoreCaretPosition(pos - beforeText.length-splitBeforeText.length+1, editor);
+							restoreCaretPosition(pos - beforeText.length - splitBeforeText.length + 1, editor);
 						} else {
 							document.execCommand("delete");
 							document.execCommand("insertHTML", false, "\t" + beforeText);
 							const pos = saveCaretPosition(editor);
-							restoreCaretPosition(pos-beforeText.length, editor);
+							restoreCaretPosition(pos - beforeText.length, editor);
 						}
 					} else {
 						document.execCommand("insertHTML", false, "\t");
@@ -196,43 +194,43 @@
 				if (getLeadingTabs(editor).length > 0) {
 					e.preventDefault();
 					if (!currentLine.trim().endsWith("{")) {
-						document.execCommand("insertHTML", false, "\n"+getLeadingTabs(editor));
+						document.execCommand("insertHTML", false, "\n" + getLeadingTabs(editor));
 					} else {
 						const tabs = getLeadingTabs(editor);
-						document.execCommand("insertHTML", false, "\n"+tabs+"\t\n"+tabs);
+						document.execCommand("insertHTML", false, "\n" + tabs + "\t\n" + tabs);
 						const pos = saveCaretPosition(editor);
-						restoreCaretPosition(pos-tabs.length-1, editor);
+						restoreCaretPosition(pos - tabs.length - 1, editor);
 					}
-					
+
 				} else {
 					if (currentLine.trim().endsWith("{")) {
 						e.preventDefault();
-						afterCursor().trim().startsWith("}") ? document.execCommand("insertHTML", false, "\n\t\n\n") :  document.execCommand("insertHTML", false, "\n\t\n\n\n");
+						afterCursor().trim().startsWith("}") ? document.execCommand("insertHTML", false, "\n\t\n\n") : document.execCommand("insertHTML", false, "\n\t\n\n\n");
 						const pos = saveCaretPosition(editor);
-						restoreCaretPosition(pos-1, editor);
+						restoreCaretPosition(pos - 1, editor);
 					}
 				}
 			}
 			for (let i = 0; i < autocomplete.length; i++) {
 				if (e.key === autocomplete[i].open) {
 					e.preventDefault();
-					if ((afterCursor().startsWith('"') || afterCursor().startsWith("'") || afterCursor().startsWith("`")) && (e.key === '"' || e.key === "'" || e.key === "`" )) {
+					if ((afterCursor().startsWith('"') || afterCursor().startsWith("'") || afterCursor().startsWith("`")) && (e.key === '"' || e.key === "'" || e.key === "`")) {
 						const pos = saveCaretPosition(editor);
 						restoreCaretPosition(pos, editor);
 					} else {
 						if (String(window.getSelection()) !== "") {
 							const beforeString = String(window.getSelection());
 							document.execCommand("delete");
-							document.execCommand("insertHTML", false, autocomplete[i].open+beforeString+autocomplete[i].close);
+							document.execCommand("insertHTML", false, autocomplete[i].open + beforeString + autocomplete[i].close);
 							const pos = saveCaretPosition(editor);
-							restoreCaretPosition(pos-1, editor);
+							restoreCaretPosition(pos - 1, editor);
 						} else {
 							document.execCommand("insertHTML", false, autocomplete[i].open + autocomplete[i].close);
 							const pos = saveCaretPosition(editor);
 							if (e.key === '"' || e.key === "`" || e.key === "'") {
-								restoreCaretPosition(pos-2, editor);
+								restoreCaretPosition(pos - 2, editor);
 							} else {
-								restoreCaretPosition(pos-1, editor);
+								restoreCaretPosition(pos - 1, editor);
 							}
 						}
 					}
@@ -240,7 +238,7 @@
 				if (e.key === "Backspace" && beforeCursor().endsWith(autocomplete[i].open) && afterCursor().startsWith(autocomplete[i].close)) {
 					e.preventDefault();
 					const pos = saveCaretPosition(editor);
-					restoreCaretPosition(pos+1, editor);
+					restoreCaretPosition(pos + 1, editor);
 					for (let i = 0; i < 2; i++) {
 						document.execCommand("delete");
 					}
@@ -249,7 +247,7 @@
 					if (afterCursor().startsWith(autocomplete[i].close)) {
 						e.preventDefault();
 						const pos = saveCaretPosition(editor);
-						restoreCaretPosition(pos+1, editor);
+						restoreCaretPosition(pos + 1, editor);
 					}
 				}
 			}
@@ -278,14 +276,14 @@
 				const lines = editor.textContent.split(/\n(?!$)/g).length;
 				line_numbers.innerHTML = "1\n";
 				for (let i = 1; i < lines; i++) {
-					line_numbers.innerHTML += String(i+1) + "\n";
+					line_numbers.innerHTML += String(i + 1) + "\n";
 				}
 			}
 			if (((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "z") || ((e.ctrlKey || e.metaKey) && e.key === "y")) {
 				e.preventDefault();
 				at++;
-				if (at > incarnations.length-1) {
-					at = incarnations.length-1;
+				if (at > incarnations.length - 1) {
+					at = incarnations.length - 1;
 					return;
 				}
 				editor.innerHTML = incarnations[at].html;
@@ -294,7 +292,7 @@
 				const lines = editor.textContent.split(/\n(?!$)/g).length;
 				line_numbers.innerHTML = "1\n";
 				for (let i = 1; i < lines; i++) {
-					line_numbers.innerHTML += String(i+1) + "\n";
+					line_numbers.innerHTML += String(i + 1) + "\n";
 				}
 			}
 			if (e.key === ">" && editor.getAttribute("class").includes("mark")) {
@@ -305,23 +303,60 @@
 						if (text[text.length - 1] === "<!DOCTYPE html") {
 							document.execCommand("insertHTML", false, "<");
 						} else {
-							text = text[text.length-1].split("<");
-							text = text[text.length-1].split(" ");
+							text = text[text.length - 1].split("<");
+							text = text[text.length - 1].split(" ");
 							const insertText = String("&gt;&lt;/" + text[0] + "&gt;");
 							document.execCommand("insertHTML", false, insertText);
 							const pos = saveCaretPosition(editor);
-							restoreCaretPosition(pos-(3+text[0].length), editor);
+							restoreCaretPosition(pos - (3 + text[0].length), editor);
 						}
 					}
 				}
 			}
+			// if (e.key === "Backspace" && String(window.getSelection()) === editor.textContent) {
+			// 	e.preventDefault();
+			// 	editor.textContent = "";
+			// 	try {
+			// 		let numberscontent = "1\n";
+			// 		const lines = editor.textContent.split(/\n(?!$)/g).length;
+			// 		line_numbers.innerHTML = "1\n";
+			// 		for (let i = 1; i < lines; i++) {
+			// 			line_numbers.innerHTML += String(i + 1) + "\n";
+			// 		}
+			// 	} catch (E) {};
+			// }
+			if (String(window.getSelection()) !== "") return; 
+			const pos = saveCaretPosition(editor);
+			hl(editor);
+			restoreCaretPosition(pos, editor);
 			downcb(e);
+			try {
+				let numberscontent = "1\n";
+				const lines = editor.textContent.split(/\n(?!$)/g).length;
+				line_numbers.innerHTML = "1\n";
+				for (let i = 1; i < lines; i++) {
+					line_numbers.innerHTML += String(i + 1) + "\n";
+				}
+			} catch (E) {};
 		});
 		editor.addEventListener("keyup", (e) => {
 			if (e.isComposing) return;
 			if (String(window.getSelection()) !== "") return;
 			info.beforeCursor = beforeCursor(editor);
 			info.afterCursor = afterCursor(editor);
+			window.setTimeout(() => {
+				const pos = saveCaretPosition(editor);
+				hl(editor);
+				restoreCaretPosition(pos, editor);
+			}, 50);
+			try {
+				let numberscontent = "1\n";
+				const lines = editor.textContent.split(/\n(?!$)/g).length;
+				line_numbers.innerHTML = "1\n";
+				for (let i = 1; i < lines; i++) {
+					line_numbers.innerHTML += String(i + 1) + "\n";
+				}
+			} catch (E) {};
 			window.setTimeout(() => {
 				const html = editor.innerHTML;
 				const pos = saveCaretPosition(editor);
@@ -332,28 +367,31 @@
 					}
 				}
 				at++;
-				incarnations[at] = { html, pos };
+				incarnations[at] = {
+					html,
+					pos
+				};
 			}, 150);
 		});
 		editor.addEventListener("mousedown", (e) => {
 			try {
 				info.beforeCursor = beforeCursor(editor);
 				info.afterCursor = afterCursor(editor);
-			} catch (IndexSizeError) {}		
+			} catch (IndexSizeError) {}
 		});
 		return {
 			textarea: editor,
-			document: (pos, html) => {
-				if (!pos && !html) {
+			document: (before, after) => {
+				if (!before && !after) {
 					return {
-						html: editor.innerHTML,
-						pos: saveCaretPosition(editor)
+						after: afterCursor(editor),
+						before: beforeCursor(editor)
 					};
-				} else if (!pos && html === true) {
-					return editor.innerHTML;
+				} else if (!before && after === true) {
+					return afterCursor(editor);
 				} else {
-					return saveCaretPosition(editor);
-				}		
+					return beforeCursor(editor);
+				}
 			},
 			setKeydownCB: (f) => {
 				if (typeof f === "function") {
@@ -383,50 +421,140 @@
 	let tarIDE = {};
 	let mainTab;
 	class tab {
-		constructor(wrap)	{
+		constructor(wrap, editor) {
+			this.editor = editor;
+			mainTab = this;
 			this.tabEl = document.createElement("DIV");
+			this.tabEl.style.webkitUserSelect = "none";
+			this.closer = document.createElement("DIV");
+			this.closer.innerHTML = "x";
+			this.closer.style.fontWeight = "bold";
+			this.closer.addEventListener("mouseover", (e) => {
+				this.closer.style.color = "white";
+			});
+			this.closer.addEventListener("mouseout", (e) => {
+				this.closer.style.color = "black";
+			});
+			this.closer.addEventListener("click", (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				mainTab.destroy();
+			});
+			this.closer.style.right = "4px";
+			this.closer.style.position = "absolute";
+			this.closer.style.fontWeight = "bold";
+			this.tabEl.style.position = "relative";
+			this.editor.textarea.textContent = "";
+			this.tabEl.style.backgroundColor = "#a0a0a0";
 			this.tabEl.innerHTML = "untitled";
 			this.tabEl.classList.add("taride-tab");
 			this.tabEl.style.display = "flex";
+			this.tabEl.style.width = "7.5%";
 			this.tabEl.style.flexDirection = "column";
 			this.tabEl.style.justifyContent = "center";
 			this.tabEl.style.alignItems = "center";
+			this.tabEl.addEventListener("click", (e) => {
+				mainTab = this;
+				for (let i = 0; i < this.wrap.childNodes.length; i++) {
+					this.wrap.childNodes[i].style.backgroundColor = "transparent";
+				}
+				this.tabEl.style.backgroundColor = "#a0a0a0";
+				this.editor.textarea.textContent = "";
+				this.editor.textarea.focus();
+				document.execCommand("insertHTML", false, this.document.before);
+				this.pos = this.saveCaretPosition(this.editor.textarea);
+				document.execCommand("insertHTML", false, this.document.after);
+				this.restoreCaretPosition(this.pos, this.editor.textarea);
+			});
 			this.wrap = wrap;
+			for (let i = 0; i < this.wrap.childNodes.length; i++) {
+				this.wrap.childNodes[i].style.backgroundColor = "transparent";
+			}
 			this.wrap.appendChild(this.tabEl);
-			mainTab = this;
+			this.tabEl.appendChild(this.closer);
 			this.document = {
-				html : "",
+				html: "",
 				pos: 0
 			}
 		}
+		saveCaretPosition(editor) {
+			const range = window.getSelection().getRangeAt(0);
+			let prefix = range.cloneRange();
+			prefix.selectNodeContents(editor);
+			prefix.setEnd(range.endContainer, range.endOffset);
+			return prefix.toString().length;
+		}
+		restoreCaretPosition(pos, context) {
+			for (const node of context.childNodes) {
+				if (node.nodeType == Node.TEXT_NODE) {
+					if (node.length >= pos) {
+						let range = document.createRange();
+						let sel = window.getSelection();
+						range.setStart(node, pos);
+						range.collapse(true);
+						sel.removeAllRanges();
+						sel.addRange(range);
+						return -1;
+					} else {
+						pos = pos - node.length;
+					}
+				} else {
+					pos = this.restoreCaretPosition(pos, node);
+					if (pos < 0) {
+						return pos;
+					}
+				}
+			}
+			return pos;
+		}
 		refresh(doc) {
 			this.document = doc;
+		}
+		destroy() {
+			for (let i = 0; i < this.wrap.childNodes.length; i++) {
+				if (!this.wrap.childNodes[i + 1]) return;
+				if (this.wrap.childNodes[i + 1].style.backgroundColor === "rgb(160, 160, 160)") {
+					this.wrap.childNodes[i + 1].remove();
+					this.wrap.childNodes[i].dispatchEvent(new Event("click"));
+				}
+			}
 		}
 	}
 	tarIDE.init = (wrap, ln = true, hl = (editor) => {editor.innerHTML = editor.innerHTML;}) => {
 		const tabBar = document.createElement("DIV");
 		tabBar.classList.add("taride-bar");
 		tabBar.style.display = "flex";
-		tabBar.style.height = "5%";
-		new tab(tabBar);
+		tabBar.style.height = "2rem";
 		const wrapper = document.createElement("DIV");
+		const editor = tar(wrapper, ln, hl);
+		wrapper.style.height = "95%";
+		new tab(tabBar, editor);
 		wrap.appendChild(tabBar);
 		wrap.appendChild(wrapper);
 		wrap.addEventListener("keyup", (e) => {
 			try {
 				mainTab.refresh(editor.document());
-				console.log(mainTab);
-			} catch(err) {};
+			} catch (err) {};
+		});
+		wrap.addEventListener("keydown", (e) => {
+			try {
+				mainTab.refresh(editor.document());
+			} catch (err) {};
 		});
 		wrap.addEventListener("click", (e) => {
 			try {
 				mainTab.refresh(editor.document());
-				console.log(mainTab);
-			} catch(err) {};
+			} catch (err) {};
 		});
-		wrap.classList.add("taride-wrapper")
-		const editor = tar(wrapper, ln, hl);
-		wrapper.style.height = "95%";
+		window.addEventListener("keydown", (e) => {
+			if ((e.ctrlKey) && e.key === "n") {
+				new tab(tabBar, editor);
+			}
+			if ((e.ctrlKey || e.metaKey) && e.key === "e") {
+				mainTab.destroy();
+			}
+		});
+		wrap.classList.add("taride-wrapper");
 		return editor;
 	}
 	return tarIDE;

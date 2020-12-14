@@ -9,20 +9,25 @@ langChooser.addEventListener("change", (e) => {
 	if (e.target.value.toLowerCase().indexOf("markdown") > -1) {
 		const newClass = editor.textarea.getAttribute("class").replace(/language-(javascript|markdown|markup|css)/g, "language-markdown");
 		editor.textarea.setAttribute("class", newClass);
+		editor.textarea.innerHTML = editor.textarea.textContent.replace(/</g, "&lt;");
 		Prism.highlightElement(editor.textarea);
 	} else if (e.target.value.toLowerCase().indexOf("css") > -1) {
 		const newClass = editor.textarea.getAttribute("class").replace(/language-(javascript|markdown|markup|css)/g, "language-css");
 		editor.textarea.setAttribute("class", newClass);
+		editor.textarea.innerHTML = editor.textarea.textContent.replace(/</g, "&lt;");
 		Prism.highlightElement(editor.textarea);
 	} else if (e.target.value.toLowerCase().indexOf("javascript") > -1) {
 		const newClass = editor.textarea.getAttribute("class").replace(/language-(javascript|markdown|markup|css)/g, "language-javascript");
 		editor.textarea.setAttribute("class", newClass);
-		lang_value = "language-javascript";
+		editor.textarea.innerHTML = editor.textarea.textContent.replace(/</g, "&lt;");
+		Prism.highlightElement(editor.textarea);
 	} else {
 		const newClass = editor.textarea.getAttribute("class").replace(/language-(javascript|markdown|markup|css)/g, "language-markup");
 		editor.textarea.setAttribute("class", newClass);
-		lang_value = "language-markup";
+		editor.textarea.innerHTML = editor.textarea.textContent.replace(/</g, "&lt;");
+		Prism.highlightElement(editor.textarea);
 	}
 	langCover.innerHTML = "";
 	langCover.innerHTML = e.target.value;
+	editor.textarea.focus();
 });
