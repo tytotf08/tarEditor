@@ -62,7 +62,7 @@ export const initScroller = scroller => {
 	scroller.style.alignItems = "flex-start";
 };
 export const initTextarea = textarea => {
-	textarea.setAttribute("contenteditable", navigator.userAgent.toLowerCase().indexOf("firefox") > -1 ? true : "plaintext-only");
+	textarea.setAttribute("contenteditable", navigator.userAgent.toLowerCase().indexOf("firefox") > -1 ||"plaintext-only");
 	textarea.setAttribute("spellcheck", false);
 	textarea.classList.add("tar-textarea");
 	textarea.style.whiteSpace = "pre";
