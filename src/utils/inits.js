@@ -23,6 +23,7 @@ export const initTextarea = textarea => {
 	textarea.style.flex = 1;
 };
 export const initLineNumbers = lineNumbers => {
+	lineNumbers.classList.add("tar-linenumbers");
 	lineNumbers.style.width = "3%";
 	lineNumbers.innerHTML = "1<br>";
 	lineNumbers.style.paddingTop = "6px";

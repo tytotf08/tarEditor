@@ -1,0 +1,24 @@
+html, 
+body {
+	height: 100%;
+	width: 100%;
+	margin: 0px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #eeeeee;
+	overflow: hidden;
+}
+.tar-wrap {
+	width: 70%;
+	height: 70%;
+	border: solid 2px #dddddd;
+	border-radius: 0.5rem;
+}
+.tar-scroller {
+	font-family: monospace;
+	color: #555555;
+}
+.tar-textarea {
+	tab-size: 2;
+}

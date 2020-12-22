@@ -64,10 +64,17 @@ export class Tar {
 			const isAutoComplete = this.autoComplete(e);
 			const undoRedo = this.setVer(e);
 			const isBackSpace = this.delete(e);
+			if (this.lineNumbers) {
+				this.lineNumbers.innerHTML = "1<br>";
+				const lines = this.editor.textContent().split(/\n(?!$)/g).length;
+				for (let i = 1; i < lines; i++) {
+					this.lineNumbers.innerHTML += String(i + 1) + "<br>";
+				}
+			}
 		});
 		this.editor.on("keyup", e => {
+			if (e.isComposing) return;
 			this.editor.diff(() => {
-				
 				const pos = this.editor.save();
 				const text = this.editor.textContent().replace(/</g, "&lt;");
 				this.editor.setHTML(text);
