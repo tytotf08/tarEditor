@@ -1,77 +1,6 @@
-const specialChars = {
-	start: [
-		"\"", "'", "`", "{", "["
-	],
-	end: [
-		"\"", "'", "`", "}", "]"
-	]
-};
-const lastOf = a => {
-	return a[a.length-1];
-};
-const restoreCaretPosition = (pos, context) => {
-	for (const node of context.childNodes) {
-		if (node.nodeType == Node.TEXT_NODE) {
-			if (node.length >= pos) {
-				let range = document.createRange();
-				let sel = window.getSelection();
-				range.setStart(node, pos);
-				range.collapse(true);
-				sel.removeAllRanges();
-				sel.addRange(range);
-				return -1;
-			} else {
-				pos = pos - node.length;
-			}
-		} else {
-			pos = restoreCaretPosition(pos, node);
-			if (pos < 0) {
-				return pos;
-			}
-		}
-	}
-	return pos;
-};
-const beforeCursor = (el) => {
-	const s = window.getSelection();
-	const r0 = s.getRangeAt(0);
-	const r = document.createRange();
-	r.selectNodeContents(el);
-	r.setEnd(r0.startContainer, r0.startOffset);
-	return r.toString();
-};
-const afterCursor = (el) => {
-	const s = window.getSelection();
-	const r0 = s.getRangeAt(0);
-	const r = document.createRange();
-	r.selectNodeContents(el);
-	r.setStart(r0.endContainer, r0.endOffset);
-	return r.toString();
-};
-const initWrap = wrap => {
-	wrap.classList.add("tar-wrap");
-	wrap.style.display = "flex";
-	wrap.style.flexDirection = "column";
-	wrap.style.overflow = "hidden";
-};
-const initScroller = scroller => {
-	scroller.style.flex = 1;
-	scroller.classList.add("tar-scroller");
-	scroller.style.overflow = "auto";
-	scroller.style.display = "flex";
-	scroller.style.alignItems = "flex-start";
-};
-const initTextarea = textarea => {
-	textarea.setAttribute("contenteditable", navigator.userAgent.toLowerCase().indexOf("firefox") > -1 ? true : "plaintext-only");
-	textarea.setAttribute("spellcheck", false);
-	textarea.classList.add("tar-textarea");
-	textarea.style.whiteSpace = "pre";
-	textarea.style.wordWrap = "normal";
-	textarea.style.overflowY = "hidden";
-	textarea.style.padding = "6px";
-	textarea.style.outline = "0px solid transparent";
-	textarea.style.flex = 1;
-};
+import * as u from "./utils.js";
+console.log(u);
+const _self = typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : this;
 class Tar {
 	constructor(wrap) {
 		if (!(wrap instanceof Node)) return false;
@@ -79,7 +8,7 @@ class Tar {
 		this.wrap = wrap;
 		this.scroller = document.createElement("DIV");
 		this.textarea = document.createElement("DIV");
-		initTextarea(this.textarea);
+		u.initTextarea(this.textarea);
 		this.prev = this.textarea.textContent;
 		this.timeMachine = [
 			{
@@ -109,16 +38,16 @@ class Tar {
 				this.prev = this.editor.textContent();
 			},
 			before: () => {
-				return beforeCursor(this.textarea);
+				return u.beforeCursor(this.textarea);
 			},
 			after: () => {
-				return afterCursor(this.textarea);
+				return u.afterCursor(this.textarea);
 			},
 			save: () => {
 				return this.editor.before().length;
 			},
 			restore: (pos) => {
-				return restoreCaretPosition(pos, this.textarea);
+				return u.restoreCaretPosition(pos, this.textarea);
 			},
 			insert: (text = "") => {
 				const newContent = this.editor.before() + text + this.editor.after();
@@ -140,10 +69,12 @@ class Tar {
 		});
 		this.editor.on("keyup", e => {
 			this.editor.diff(() => {
-				this.lineNumbers.innerHTML = "1<br>";
-				const lines = this.editor.textContent().split(/\n(?!$)/g).length;
-				for (let i = 1; i < lines; i++) {
-					this.lineNumbers.innerHTML += String(i + 1) + "<br>";
+				if (this.lineNumbers) {
+					this.lineNumbers.innerHTML = "1<br>";
+					const lines = this.editor.textContent().split(/\n(?!$)/g).length;
+					for (let i = 1; i < lines; i++) {
+						this.lineNumbers.innerHTML += String(i + 1) + "<br>";
+					}
 				}
 				const pos = this.editor.save();
 				const text = this.editor.textContent().replace(/</g, "&lt;");
@@ -161,8 +92,8 @@ class Tar {
 				}, 300);
 			});
 		});
-		initScroller(this.scroller);
-		initWrap(this.wrap);
+		u.initScroller(this.scroller);
+		u.initWrap(this.wrap);
 		this.scroller.appendChild(this.textarea);
 		this.wrap.appendChild(this.scroller);
 		return this;
@@ -195,7 +126,7 @@ class Tar {
 	}
 	enter(e) {
 		if (e.key === "Enter") {
-			const currentLine = lastOf(this.editor.before().split("\n"));
+			const currentLine = u.lastOf(this.editor.before().split("\n"));
 			let tabs = "";
 			let i = 0;
 			while (currentLine.charAt(i) === "\t") {
@@ -224,20 +155,20 @@ class Tar {
 		}
 	}
 	autoComplete(e) {
-		for (let i = 0; i < specialChars.start.length; i++) {
-			if (e.key === specialChars.start[i]) {
+		for (let i = 0; i < u.specialChars.start.length; i++) {
+			if (e.key === u.specialChars.start[i]) {
 				e.preventDefault();
-				if (specialChars.start[i] === specialChars.end[i] && ((this.editor.before().endsWith(specialChars.start[i]) && this.editor.after().startsWith(specialChars.end[i])))) {
+				if (u.specialChars.start[i] === u.specialChars.end[i] && ((this.editor.before().endsWith(u.specialChars.start[i]) && this.editor.after().startsWith(u.specialChars.end[i])))) {
 					const pos = this.editor.save() + 1;
 					this.editor.restore(pos);
 				} else {
-					this.editor.insert(specialChars.start[i] + specialChars.end[i]);
+					this.editor.insert(u.specialChars.start[i] + u.specialChars.end[i]);
 					const pos = this.editor.save() - 1;
 					this.editor.restore(pos);
 				}
 				break;	
-			} else if (e.key === specialChars.end[i]) {
-				if (this.editor.before().endsWith(specialChars.start[i]) && this.editor.after().startsWith(specialChars.end[i])) {
+			} else if (e.key === u.specialChars.end[i]) {
+				if (this.editor.before().endsWith(u.specialChars.start[i]) && this.editor.after().startsWith(u.specialChars.end[i])) {
 					e.preventDefault();
 					const pos = this.editor.save() + 1;
 					this.editor.restore(pos);
@@ -275,12 +206,15 @@ class Tar {
 	}
 	delete(e) {
 		if (e.key === "Backspace") {
-			const currentLine = lastOf(this.editor.innerHTML().split("\n"));
-			this.lineNumbers.innerHTML = "1<br>";
-			const lines = this.editor.textContent().split(/\n(?!$)/g).length;
-			for (let i = 2; i < lines; i++) {
-				this.lineNumbers.innerHTML += String(i) + "<br>";
+			const currentLine = u.lastOf(this.editor.innerHTML().split("\n"));
+			if (this.lineNumbers) {
+				this.lineNumbers.innerHTML = "1<br>";
+				const lines = this.editor.textContent().split(/\n(?!$)/g).length;
+				for (let i = 2; i < lines; i++) {
+					this.lineNumbers.innerHTML += String(i) + "<br>";
+				}
 			}
+			
 			return true;
 		} else {
 			return false;
@@ -290,3 +224,4 @@ class Tar {
 const tar = (wrap) => {
 	return new Tar(wrap);
 };
+_self.tar = tar;
