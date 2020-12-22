@@ -4,11 +4,13 @@
   "description": "Tar Editor is a JS text editor.",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "start": "http-server ./test/ -a localhost -p 8000",
+    "build": "webpack; cp ./dist/tareditor.js ./test/tareditor.js",
     "live": "webpack --watch"
   },
   "license": "MPL-2.0",
   "dependencies": {
+    "http-server": "^0.12.3",
     "webpack": "^5.11.0"
   },
   "devDependencies": {
