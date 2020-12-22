@@ -1,5 +1,4 @@
 import * as u from "./utils.js";
-console.log(u);
 const _self = typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : this;
 class Tar {
 	constructor(wrap) {
@@ -221,7 +220,10 @@ class Tar {
 		}
 	}
 };
-const tar = (wrap) => {
+const init = (wrap) => {
 	return new Tar(wrap);
 };
+const tar = {
+	init
+}
 _self.tar = tar;
