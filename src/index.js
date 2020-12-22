@@ -221,8 +221,8 @@ class Tar {
 		}
 	}
 };
-const init = (wrap) => {
-	return new Tar(wrap);
+const init = (wrap, ln) => {
+	return new Tar(wrap, ln);
 };
 const tar = {
 	init
