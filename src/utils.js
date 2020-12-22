@@ -72,3 +72,9 @@ export const initTextarea = textarea => {
 	textarea.style.outline = "0px solid transparent";
 	textarea.style.flex = 1;
 };
+export const initLineNumbers = lineNumbers => {
+	lineNumbers.style.width = "3%";
+	lineNumbers.innerHTML = "1<br>";
+	lineNumbers.style.paddingTop = "6px";
+	lineNumbers.style.textAlign = "center";
+}

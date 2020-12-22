@@ -1,9 +1,9 @@
 import * as u from "./utils.js";
 const _self = typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : this;
 class Tar {
-	constructor(wrap) {
+	constructor(wrap, ln = false) {
 		if (!(wrap instanceof Node)) return false;
-		this.ln = false;
+		this.ln = ln;
 		this.wrap = wrap;
 		this.scroller = document.createElement("DIV");
 		this.textarea = document.createElement("DIV");
@@ -65,6 +65,13 @@ class Tar {
 			const isAutoComplete = this.autoComplete(e);
 			const undoRedo = this.setVer(e);
 			const isBackSpace = this.delete(e);
+			if (this.lineNumbers) {
+				this.lineNumbers.innerHTML = "1<br>";
+				const lines = this.editor.textContent().split(/\n(?!$)/g).length;
+				for (let i = 2; i < lines; i++) {
+					this.lineNumbers.innerHTML += String(i) + "<br>";
+				}
+			}
 		});
 		this.editor.on("keyup", e => {
 			this.editor.diff(() => {
@@ -93,19 +100,14 @@ class Tar {
 		});
 		u.initScroller(this.scroller);
 		u.initWrap(this.wrap);
+		if (this.ln === true) {
+			this.lineNumbers = document.createElement("DIV");
+			u.initLineNumbers(this.lineNumbers);
+			this.textarea.style.flex = "97%";
+			this.scroller.appendChild(this.lineNumbers);
+		}
 		this.scroller.appendChild(this.textarea);
 		this.wrap.appendChild(this.scroller);
-		return this;
-	}
-	setLN(b) {
-		this.ln = true;
-		this.lineNumbers = document.createElement("DIV");
-		this.lineNumbers.style.width = "3%";
-		this.textarea.style.flex = "97%";
-		this.scroller.insertBefore(this.lineNumbers, this.textarea);
-		this.lineNumbers.innerHTML = "1<br>";
-		this.lineNumbers.style.paddingTop = "6px";
-		this.lineNumbers.style.textAlign = "center";
 		return this;
 	}
 	indent(e) {
@@ -202,7 +204,7 @@ class Tar {
 				return false;
 			}
 		}
-	}
+	} 
 	delete(e) {
 		if (e.key === "Backspace") {
 			const currentLine = u.lastOf(this.editor.innerHTML().split("\n"));
@@ -212,8 +214,7 @@ class Tar {
 				for (let i = 2; i < lines; i++) {
 					this.lineNumbers.innerHTML += String(i) + "<br>";
 				}
-			}
-			
+			}	
 			return true;
 		} else {
 			return false;
@@ -225,5 +226,5 @@ const init = (wrap) => {
 };
 const tar = {
 	init
-}
+};
 _self.tar = tar;
