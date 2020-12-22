@@ -1,0 +1,11 @@
+import * as caret from "./caret.js";
+import * as initialisers from "./inits.js";
+export const restoreCaretPosition = caret.rC;
+export const beforeCursor = caret.bC;
+export const afterCursor = caret.aC;
+export const initWrap = initialisers.initWrap;
+export const initScroller = initialisers.initScroller;
+export const initTextarea = initialisers.initTextarea;
+export const initLineNumbers = initialisers.initLineNumbers;
+export const specialChars = {start: ["\"", "'", "`", "{", "[", "("], end: ["\"", "'", "`", "}", "]", ")"]};
+export const lastOf = a => a[a.length-1];
