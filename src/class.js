@@ -1,7 +1,8 @@
 import * as u from "./utils/index.js";
 export class Tar {
-	constructor(wrap, ln = false) {
+	constructor(wrap, hl = () => {}, ln = false) {
 		if (!(wrap instanceof Node)) return false;
+		this.hl = hl;
 		this.ln = ln;
 		this.wrap = wrap;
 		this.scroller = document.createElement("DIV");
@@ -62,6 +63,15 @@ export class Tar {
 			const isTab = this.indent(e);
 			const isEnter = this.enter(e);
 			const isAutoComplete = this.autoComplete(e);
+			if (isTab === true || isEnter === true || isAutoComplete === true) {
+				const pos = this.editor.save();
+				const text = this.editor.textContent()
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&lt;");
+				this.editor.setHTML(text);
+				this.hl(this.textarea);
+				this.editor.restore(pos);
+			}
 			const undoRedo = this.setVer(e);
 			const isBackSpace = this.delete(e);
 			if (this.lineNumbers) {
@@ -76,8 +86,11 @@ export class Tar {
 			if (e.isComposing) return;
 			this.editor.diff(() => {
 				const pos = this.editor.save();
-				const text = this.editor.textContent().replace(/</g, "&lt;");
+				const text = this.editor.textContent()
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&lt;");
 				this.editor.setHTML(text);
+				this.hl(this.textarea);
 				this.editor.restore(pos);
 				const splitText = this.editor.innerHTML().split("\n");
 				window.setTimeout(() => {
@@ -165,6 +178,7 @@ export class Tar {
 					const pos = this.editor.save() - 1;
 					this.editor.restore(pos);
 				}
+				return true;
 				break;	
 			} else if (e.key === u.specialChars.end[i]) {
 				if (this.editor.before().endsWith(u.specialChars.start[i]) && this.editor.after().startsWith(u.specialChars.end[i])) {
@@ -172,6 +186,7 @@ export class Tar {
 					const pos = this.editor.save() + 1;
 					this.editor.restore(pos);
 				} 
+				return true;
 				break;
 			}
 		}

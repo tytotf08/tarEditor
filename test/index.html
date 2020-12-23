@@ -8,7 +8,9 @@
 	<div id = "editor"></div>
 	<script src = "./tareditor.js"></script>
 	<script>
-		tar.init(document.querySelector("div#editor"), true);
+		tar.init(document.querySelector("div#editor"), (el) => {
+			el.innerHTML = el.innerHTML.replace(/\bfunction/g, "<strong>function</strong>");
+		}, true);
 	</script>
 </body>
 </html>

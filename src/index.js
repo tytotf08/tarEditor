@@ -15,8 +15,8 @@ import {Tar} from "./class.js"; // import class Tar
 const _self = typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : this;
 
 const tar = {
-	init: (wrap, ln) => {
-		return new Tar(wrap, ln);
+	init: (wrap, hl, ln) => {
+		return new Tar(wrap, hl, ln);
 	}
 };
 
