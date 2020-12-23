@@ -181,7 +181,7 @@ export class Tar {
 				return true;
 				break;	
 			} else if (e.key === u.specialChars.end[i]) {
-				if (this.editor.before().endsWith(u.specialChars.start[i]) && this.editor.after().startsWith(u.specialChars.end[i])) {
+				if (this.editor.after().startsWith(u.specialChars.end[i])) {
 					e.preventDefault();
 					const pos = this.editor.save() + 1;
 					this.editor.restore(pos);
