@@ -3,7 +3,7 @@
 Tar Editor is a web text editor made with JavaScript.
 
 ## File Structure:
-
+```
 tarEditor
 --> dist
 	--> tareditor.js
@@ -20,3 +20,4 @@ tarEditor
 	--> package.json
 	--> README.md
 	--> webpack.config.js
+```
