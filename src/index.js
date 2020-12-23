@@ -1,4 +1,4 @@
-import {Tar} from "./class.js"; // import class Tar
+import Tar from "./class.js"; // import class Tar
 
 // _self is the global scope. it's determined by nested if statements.
 // below is a clarification.

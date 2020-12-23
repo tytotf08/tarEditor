@@ -1,5 +1,5 @@
 import * as u from "./utils/index.js";
-export class Tar {
+export default class Tar {
 	constructor(wrap, hl = () => {}, ln = false) {
 		if (!(wrap instanceof Node)) return false;
 		this.hl = hl;
