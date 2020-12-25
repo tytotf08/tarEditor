@@ -5,12 +5,11 @@
 	<link rel = "stylesheet" href = "./index.css"/>
 </head>
 <body>
-	<div id = "editor"></div>
-	<script src = "./tareditor.js"></script>
-	<script>
-		tar.init(document.querySelector("div#editor"), (el) => {
-			el.innerHTML = el.innerHTML.replace(/\bfunction/g, "<strong>function</strong>");
-		}, true);
+	<div id = "editor" class = "language-javascript"></div>
+	<script src = "./tareditor.js" type = "text/javascript"></script>
+	<script src = "./prism.js" type = "text/javascript"></script>
+	<script type = "text/javascript">
+		tar.init(document.querySelector("div#editor"), Prism.highlightElement, true);
 	</script>
 </body>
 </html>

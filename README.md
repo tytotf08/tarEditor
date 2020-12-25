@@ -20,9 +20,9 @@ tarEditor
 ------> tareditor.js (clone of dist/tareditor.js)
 ----> class.js
 ----> index.js
-----> .gitignore
-----> LICENSE
-----> package.json
-----> README.md
-----> webpack.config.js
+--> .gitignore
+--> LICENSE
+--> package.json
+--> README.md
+--> webpack.config.js
 ```

@@ -1,7 +1,7 @@
 import * as u from "./utils/index.js";
 export default class Tar {
 	constructor(wrap, hl = () => {}, ln = false) {
-		if (!(wrap instanceof Node)) return false;
+		if (!(wrap instanceof Node)) return this;
 		this.hl = hl;
 		this.ln = ln;
 		this.wrap = wrap;
@@ -49,9 +49,13 @@ export default class Tar {
 				return u.restoreCaretPosition(pos, this.textarea);
 			},
 			insert: (text = "") => {
-				const newContent = this.editor.before() + text + this.editor.after();
 				const pos = this.editor.save();
-				this.textarea.textContent = newContent;
+				const before = (this.editor.before() + text)
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;");
+				const after = this.editor.after();
+				this.editor.setHTML(before + after);
+				this.hl(this.textarea);
 				this.editor.restore(pos + text.length);
 			},
 			setHTML: (text = "") => {
@@ -63,15 +67,6 @@ export default class Tar {
 			const isTab = this.indent(e);
 			const isEnter = this.enter(e);
 			const isAutoComplete = this.autoComplete(e);
-			if (isTab === true || isEnter === true || isAutoComplete === true) {
-				const pos = this.editor.save();
-				const text = this.editor.textContent()
-					.replace(/</g, "&lt;")
-					.replace(/>/g, "&lt;");
-				this.editor.setHTML(text);
-				this.hl(this.textarea);
-				this.editor.restore(pos);
-			}
 			const undoRedo = this.setVer(e);
 			const isBackSpace = this.delete(e);
 			if (this.lineNumbers) {
@@ -88,7 +83,7 @@ export default class Tar {
 				const pos = this.editor.save();
 				const text = this.editor.textContent()
 					.replace(/</g, "&lt;")
-					.replace(/>/g, "&lt;");
+					.replace(/>/g, "&gt;");
 				this.editor.setHTML(text);
 				this.hl(this.textarea);
 				this.editor.restore(pos);
@@ -170,7 +165,7 @@ export default class Tar {
 		for (let i = 0; i < u.specialChars.start.length; i++) {
 			if (e.key === u.specialChars.start[i]) {
 				e.preventDefault();
-				if (u.specialChars.start[i] === u.specialChars.end[i] && ((this.editor.before().endsWith(u.specialChars.start[i]) && this.editor.after().startsWith(u.specialChars.end[i])))) {
+				if (u.specialChars.start[i] === u.specialChars.end[i] && this.editor.after().startsWith(u.specialChars.end[i])) {
 					const pos = this.editor.save() + 1;
 					this.editor.restore(pos);
 				} else {
@@ -220,7 +215,24 @@ export default class Tar {
 	} 
 	delete(e) {
 		if (e.key === "Backspace") {
-			const currentLine = u.lastOf(this.editor.innerHTML().split("\n"));
+			for (let i = 0; i < u.specialChars.start.length; i++) {
+				if (this.editor.before().endsWith(u.specialChars.start[i]) && this.editor.after().startsWith(u.specialChars.end[i])) {
+					e.preventDefault();
+					let before = this.editor.before();
+					let after = this.editor.after();
+					before = before.split("");
+					before.pop();
+					after = after.split("");
+					after.shift();
+					before = before.join("");
+					after = after.join("");
+					console.log(before + after);
+					const text = before + after;
+					const pos = before.length;
+					this.editor.setHTML(text);
+					this.editor.restore(pos);
+				} 
+			}
 			return true;
 		} else {
 			return false;
