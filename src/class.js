@@ -144,11 +144,13 @@ export default class Tar {
 				tabs += "\t";
 				i++;
 			};
-			if (currentLine.endsWith("{") && this.editor.after().startsWith("}")) {
+			if (currentLine.endsWith("{")) {
 				e.preventDefault();
 				this.editor.insert("\n" + tabs + "\t");
 				const pos = this.editor.save();
-				this.editor.insert("\n" + tabs);
+				if (this.editor.after().startsWith("}")) {
+					this.editor.insert("\n" + tabs);
+				}	
 				this.editor.restore(pos);
 			} else {
 				if (tabs.length > 0) {
