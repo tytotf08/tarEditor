@@ -1,7 +1,7 @@
 import Tar from "./class.js"; // import class Tar
 
 // _self is the global scope. it's determined by nested if statements.
-// below is a clarification.
+// below is clarification.
 /*
 * if window it's window
 * else

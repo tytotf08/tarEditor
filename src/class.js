@@ -108,6 +108,26 @@ export default class Tar {
 				}
 			}
 		});
+		this.editor.on("paste", e => {
+			e.preventDefault();
+			const pos = this.editor.save();
+			const text = (event.originalEvent || event).clipboardData.getData("text/plain");
+			this.editor.insert(text);
+			this.editor.setHTML(
+				this.editor.textContent()
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;")
+			);
+			this.hl(this.textarea);
+			this.editor.restore(pos + text.length);
+			if (this.lineNumbers) {
+				this.lineNumbers.innerHTML = "1<br>";
+				const lines = this.editor.textContent().split(/\n(?!$)/g).length;
+				for (let i = 1; i < lines; i++) {
+					this.lineNumbers.innerHTML += String(i + 1) + "<br>";
+				}
+			}
+		});
 		u.initScroller(this.scroller);
 		u.initWrap(this.wrap);
 		if (this.ln === true) {
